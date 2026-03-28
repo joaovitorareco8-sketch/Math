@@ -1,0 +1,505 @@
+[
+  {
+    "template_id": "KA-vp-L1-choice",
+    "unit_id": "KA.1",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual é o valor do dígito {d} no número {n}?",
+    "correct": "{pos_value}",
+    "feedback_correct": "O dígito {d} está na posição {pos_name}, então vale {pos_value}.",
+    "distractors": [
+      {
+        "value": "{d}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você confundiu o dígito com seu valor posicional. O dígito {d} na posição {pos_name} vale {pos_value}, não {d}."
+      },
+      {
+        "value": "{pos_value * 10}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você deslocou uma posição a mais. A posição correta é {pos_name}, que vale {pos_value}."
+      },
+      {
+        "value": "{pos_value / 10}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você deslocou uma posição a menos. A posição correta é {pos_name}, que vale {pos_value}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": ["302", "450", "1307", "2540", "8061"],
+        "d": "dígito não nulo de n",
+        "pos_name": "nome da posição do dígito d em n",
+        "pos_value": "d * potência de 10 correspondente"
+      },
+      "constraints": ["d != 0", "n tem pelo menos 3 dígitos"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "302", "d": "3", "pos_name": "centenas", "pos_value": "300" },
+        "question": "Qual é o valor do dígito 3 no número 302?",
+        "correct": "300",
+        "distractors": ["3", "3000", "30"]
+      },
+      {
+        "params": { "n": "1307", "d": "3", "pos_name": "centenas", "pos_value": "300" },
+        "question": "Qual é o valor do dígito 3 no número 1307?",
+        "correct": "300",
+        "distractors": ["3", "3000", "30"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KA-dec-L2-choice",
+    "unit_id": "KA.2",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual é a decomposição correta de {n}?",
+    "correct": "{decomp_correct}",
+    "feedback_correct": "{n} = {decomp_correct}. Cada dígito contribui com seu valor posicional.",
+    "distractors": [
+      {
+        "value": "{decomp_missing_zero}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você ignorou o zero. Mesmo que o dígito seja 0, a posição existe e contribui com 0 para a soma — mas não precisa aparecer na decomposição aditiva."
+      },
+      {
+        "value": "{decomp_wrong_pos}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Um dos valores posicionais está errado. Verifique cada dígito multiplicado pela potência de 10 correspondente."
+      },
+      {
+        "value": "{decomp_digit_only}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você usou os dígitos isolados, não seus valores posicionais. 302 = 300 + 0 + 2, não 3 + 0 + 2."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": ["302", "450", "1307", "2050", "4006"],
+        "decomp_correct": "soma dos valores posicionais de n",
+        "decomp_missing_zero": "decomposição omitindo posição zero",
+        "decomp_wrong_pos": "decomposição com um valor posicional errado",
+        "decomp_digit_only": "soma dos dígitos isolados"
+      },
+      "constraints": ["n tem pelo menos um zero não terminal"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "302", "decomp_correct": "300 + 2", "decomp_missing_zero": "300 + 2 (aceito)", "decomp_wrong_pos": "30 + 2", "decomp_digit_only": "3 + 0 + 2" },
+        "question": "Qual é a decomposição correta de 302?",
+        "correct": "300 + 2",
+        "distractors": ["30 + 2", "3 + 0 + 2", "3000 + 2"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KA-ord-L1-choice",
+    "unit_id": "KA.3",
+    "level": "L1",
+    "format": "comparison",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual é a relação correta entre {a} e {b}?",
+    "correct": "{a} {op} {b}",
+    "feedback_correct": "{a} {op} {b}. Compare as partes inteiras primeiro; se iguais, compare os decimais posição a posição.",
+    "distractors": [
+      {
+        "value": "{a} {op_inv} {b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você inverteu a comparação. Lembre: 0.9 tem 9 décimos, 0.12 tem 1 décimo e 2 centésimos. 9 décimos > 1 décimo."
+      },
+      {
+        "value": "{a} = {b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{a} e {b} são diferentes. Compare posição a posição da esquerda para a direita."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": "decimal entre 0 e 2",
+        "b": "decimal entre 0 e 2",
+        "op": "símbolo correto (<, >, =)",
+        "op_inv": "símbolo invertido"
+      },
+      "constraints": ["a != b", "comparação não trivial (ex: 0.9 vs 0.12, 1.05 vs 1.5)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "0.9", "b": "0.12", "op": ">", "op_inv": "<" },
+        "question": "Qual é a relação correta entre 0.9 e 0.12?",
+        "correct": "0.9 > 0.12",
+        "distractors": ["0.9 < 0.12", "0.9 = 0.12"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KA-mag-L1-choice",
+    "unit_id": "KA.4",
+    "level": "L1",
+    "format": "estimation",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "A qual ordem de grandeza {n} está mais próximo?",
+    "correct": "{mag_correct}",
+    "feedback_correct": "{n} está entre {mag_correct/10} e {mag_correct*10}, então a ordem de grandeza é {mag_correct}.",
+    "distractors": [
+      {
+        "value": "{mag_correct * 10}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{mag_correct * 10} é uma ordem de grandeza acima. {n} está mais próximo de {mag_correct}."
+      },
+      {
+        "value": "{mag_correct / 10}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{mag_correct / 10} é uma ordem de grandeza abaixo. {n} está mais próximo de {mag_correct}."
+      },
+      {
+        "value": "{n_rounded}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você arredondou o número, não encontrou sua ordem de grandeza. Ordem de grandeza é a potência de 10 mais próxima."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": ["3700", "520", "8900", "150", "4200", "75000"],
+        "mag_correct": "potência de 10 mais próxima de n",
+        "n_rounded": "n arredondado para centena ou milhar mais próximo"
+      },
+      "constraints": ["n não é potência exata de 10"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "3700", "mag_correct": "1000", "n_rounded": "4000" },
+        "question": "A qual ordem de grandeza 3700 está mais próximo?",
+        "correct": "1000",
+        "distractors": ["10000", "100", "4000"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KA-abs-L1-choice",
+    "unit_id": "KA.5",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual é o valor de |{a}|?",
+    "correct": "{abs_a}",
+    "feedback_correct": "|{a}| = {abs_a}. Valor absoluto é a distância ao zero, sempre não negativo.",
+    "distractors": [
+      {
+        "value": "{a}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Se {a} é negativo, |{a}| não é {a}. Valor absoluto remove o sinal."
+      },
+      {
+        "value": "{-abs_a}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Valor absoluto nunca é negativo. |{a}| = {abs_a}."
+      },
+      {
+        "value": "{1/abs_a}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você confundiu valor absoluto com inverso multiplicativo. |{a}| = {abs_a}, não 1/{abs_a}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [-7, -3, -12, -0.5, -8, 5, -15],
+        "abs_a": "valor absoluto de a"
+      },
+      "constraints": ["a != 0", "incluir casos negativos e positivos"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "-7", "abs_a": "7" },
+        "question": "Qual é o valor de |-7|?",
+        "correct": "7",
+        "distractors": ["-7", "-1/7", "1/7"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KA-comp10-L2-choice",
+    "unit_id": "KA.6",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Quanto falta para {n} chegar em {pot}?",
+    "correct": "{pot - n}",
+    "feedback_correct": "{pot} - {n} = {pot - n}. Uma forma rápida: complete as unidades, depois as dezenas.",
+    "distractors": [
+      {
+        "value": "{pot - n + 10}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você errou por 10. Verifique cada posição: unidades primeiro, depois dezenas."
+      },
+      {
+        "value": "{n - pot}",
+        "distractor_type": "ERRO_DIREÇÃO",
+        "feedback": "Você inverteu. A pergunta é quanto falta de {n} até {pot}, não o contrário."
+      },
+      {
+        "value": "{pot - n + 1}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você errou por 1. Cuidado com o carry ao completar as unidades."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": ["37", "68", "253", "847", "392"],
+        "pot": "próxima potência de 10 acima de n (100, 1000, etc.)"
+      },
+      "constraints": ["n não é múltiplo de pot/10"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "37", "pot": "100" },
+        "question": "Quanto falta para 37 chegar em 100?",
+        "correct": "63",
+        "distractors": ["73", "37", "64"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KA-dens-L1-choice",
+    "unit_id": "KA.7",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Existe algum número racional entre {a} e {b}?",
+    "correct": "Sim — por exemplo {example}",
+    "feedback_correct": "Entre dois racionais distintos sempre existe outro racional. Por exemplo, a média ({a}+{b})/2 = {example}.",
+    "distractors": [
+      {
+        "value": "Não existe",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Entre dois racionais distintos sempre existe outro. Os racionais são densos na reta numérica."
+      },
+      {
+        "value": "Só existe um",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Existem infinitos. Entre {a} e {b} há {example}, mas também {example2}, e assim por diante."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": ["0.1", "1/3", "0.5", "2"],
+        "b": "racional próximo de a, b > a",
+        "example": "média de a e b",
+        "example2": "outro racional entre a e b"
+      },
+      "constraints": ["b - a < 0.5", "não trivial (ex: 0.1 e 0.2, não 0 e 100)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "0.1", "b": "0.2", "example": "0.15", "example2": "0.11" },
+        "question": "Existe algum número racional entre 0.1 e 0.2?",
+        "correct": "Sim — por exemplo 0.15",
+        "distractors": ["Não existe", "Só existe um"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KA-equiv-L2-corr",
+    "unit_id": "KA.8",
+    "level": "L2",
+    "format": "numeric_indirect",
+    "context": "bare",
+    "interaction": "I3",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Associe cada representação ao seu valor equivalente.",
+    "correct": "{pairs}",
+    "feedback_correct": "Todas as representações descrevem o mesmo valor, apenas em formas diferentes.",
+    "distractors": [
+      {
+        "value": "fração com decimal de outra fração",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Fração e decimal representam o mesmo número. 1/2 = 0.5, não 0.25."
+      }
+    ],
+    "params": {
+      "vars": {
+        "pairs": [
+          {"frac": "1/2",  "dec": "0.5",  "pct": "50%"},
+          {"frac": "1/4",  "dec": "0.25", "pct": "25%"},
+          {"frac": "3/4",  "dec": "0.75", "pct": "75%"},
+          {"frac": "1/5",  "dec": "0.2",  "pct": "20%"},
+          {"frac": "2/5",  "dec": "0.4",  "pct": "40%"}
+        ]
+      },
+      "constraints": ["usar 3 pares por instância", "incluir fração + decimal + porcentagem"]
+    },
+    "seed_examples": [
+      {
+        "params": { "pairs": [{"frac":"1/2","dec":"0.5","pct":"50%"}] },
+        "question": "Associe: 1/2 · 0.5 · 50%",
+        "correct": "todos equivalentes",
+        "distractors": ["1/2 com 0.25", "0.5 com 25%"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KA-pt-L2-choice",
+    "unit_id": "KA.9",
+    "level": "L2",
+    "format": "verbal_simple",
+    "context": "verbal_context",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{contexto}. Se {frac} representa {part}, qual é o {todo}?",
+    "correct": "{whole}",
+    "feedback_correct": "Se {frac} = {part}, então o todo = {part} ÷ {num} × {den} = {whole}.",
+    "distractors": [
+      {
+        "value": "{part * num}",
+        "distractor_type": "ERRO_DIREÇÃO",
+        "feedback": "Você multiplicou em vez de dividir. Se {frac} do todo = {part}, o todo é maior que {part}."
+      },
+      {
+        "value": "{part - num}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "A relação é multiplicativa, não aditiva. Todo = {part} ÷ ({num}/{den}) = {whole}."
+      },
+      {
+        "value": "{part}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{part} é a parte, não o todo. O todo é {whole}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "frac": ["2/3", "3/4", "1/2", "3/5"],
+        "part": [10, 12, 15, 9, 6],
+        "num": "numerador de frac",
+        "den": "denominador de frac",
+        "whole": "part * den / num",
+        "contexto": "situação simples (turma, caixa, grupo)"
+      },
+      "constraints": ["part divisível por num", "whole inteiro"]
+    },
+    "seed_examples": [
+      {
+        "params": { "frac": "2/3", "part": "10", "num": "2", "den": "3", "whole": "15", "contexto": "Em uma turma" },
+        "question": "Em uma turma, 2/3 dos alunos são meninas. Se há 10 meninas, quantos alunos há no total?",
+        "correct": "15",
+        "distractors": ["20", "8", "10"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KA-oposto-L1-choice",
+    "unit_id": "KA.10",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual é o oposto de {a}?",
+    "correct": "{-a}",
+    "feedback_correct": "O oposto de {a} é {-a}. Oposto = mesmo módulo, sinal contrário.",
+    "distractors": [
+      {
+        "value": "{1/a}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você deu o inverso multiplicativo, não o oposto. O oposto de {a} é {-a}, não 1/{a}."
+      },
+      {
+        "value": "{a}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "O oposto tem sinal contrário. O oposto de {a} é {-a}."
+      },
+      {
+        "value": "{abs(a) + 1}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Oposto não altera o módulo, só o sinal. O oposto de {a} é {-a}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [-5, 3, -8, 7, -12, 0.5, -0.5]
+      },
+      "constraints": ["a != 0", "incluir positivos e negativos"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "-5" },
+        "question": "Qual é o oposto de -5?",
+        "correct": "5",
+        "distractors": ["-1/5", "-5", "6"]
+      }
+    ]
+  }
+]

@@ -1,0 +1,574 @@
+[
+  {
+    "template_id": "KB-tab-L1-choice",
+    "unit_id": "KB.1",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 3,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a} × {b} = ?",
+    "correct": "{a*b}",
+    "feedback_correct": "{a} × {b} = {a*b}.",
+    "distractors": [
+      {
+        "value": "{neighbor}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{neighbor} é o resultado de {a} × {b_neighbor}. Revise a tabuada de {a}."
+      },
+      {
+        "value": "{a+b}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Você somou em vez de multiplicar. {a} × {b} = {a*b}, não {a+b}."
+      },
+      {
+        "value": "{a*b - a}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Você parou uma linha antes. {a} × {b} = {a*b}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 4, 5, 6, 7, 8, 9],
+        "b": [2, 3, 4, 5, 6, 7, 8, 9],
+        "neighbor": "a * (b-1) ou a * (b+1)",
+        "b_neighbor": "b-1 ou b+1"
+      },
+      "constraints": ["a <= b", "priorizar combinações com erro documentado: 7×8, 6×7, 6×8, 7×9"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "7", "b": "8", "neighbor": "54", "b_neighbor": "7" },
+        "question": "7 × 8 = ?",
+        "correct": "56",
+        "distractors": ["54", "15", "49"]
+      },
+      {
+        "params": { "a": "6", "b": "7", "neighbor": "36", "b_neighbor": "6" },
+        "question": "6 × 7 = ?",
+        "correct": "42",
+        "distractors": ["36", "13", "35"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KB-tab-div-L1-choice",
+    "unit_id": "KB.2",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 3,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a*b} ÷ {a} = ?",
+    "correct": "{b}",
+    "feedback_correct": "{a*b} ÷ {a} = {b}, pois {a} × {b} = {a*b}.",
+    "distractors": [
+      {
+        "value": "{b+1}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{a} × {b+1} = {a*(b+1)}, não {a*b}. A resposta é {b}."
+      },
+      {
+        "value": "{b-1}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{a} × {b-1} = {a*(b-1)}, não {a*b}. A resposta é {b}."
+      },
+      {
+        "value": "{a}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você retornou o divisor. {a*b} ÷ {a} pede quantas vezes {a} cabe em {a*b}, que é {b}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 4, 5, 6, 7, 8, 9],
+        "b": [2, 3, 4, 5, 6, 7, 8, 9]
+      },
+      "constraints": ["a <= b"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "7", "b": "8" },
+        "question": "56 ÷ 7 = ?",
+        "correct": "8",
+        "distractors": ["9", "7", "6"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KB-dobro-L1-choice",
+    "unit_id": "KB.3",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 3,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual é o {op} de {n}?",
+    "correct": "{result}",
+    "feedback_correct": "O {op} de {n} é {result}.",
+    "distractors": [
+      {
+        "value": "{result + 1}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Quase. O {op} de {n} é {result}, não {result+1}."
+      },
+      {
+        "value": "{result - 1}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Quase. O {op} de {n} é {result}, não {result-1}."
+      },
+      {
+        "value": "{n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você retornou o próprio número. O {op} de {n} é {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [6, 7, 8, 9, 12, 15, 18, 24],
+        "op": ["dobro", "triplo", "metade", "terça parte"],
+        "result": "n*2, n*3, n/2 ou n/3 conforme op"
+      },
+      "constraints": ["para metade: n par", "para terça parte: n divisível por 3"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "18", "op": "metade", "result": "9" },
+        "question": "Qual é a metade de 18?",
+        "correct": "9",
+        "distractors": ["10", "8", "18"]
+      },
+      {
+        "params": { "n": "7", "op": "dobro", "result": "14" },
+        "question": "Qual é o dobro de 7?",
+        "correct": "14",
+        "distractors": ["15", "13", "7"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KB-mult10-L1-choice",
+    "unit_id": "KB.4",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 2,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} × {pot} = ?",
+    "correct": "{n * pot}",
+    "feedback_correct": "Multiplicar por {pot} desloca {zeros} posição(ões) à esquerda: {n} × {pot} = {n*pot}.",
+    "distractors": [
+      {
+        "value": "{n * pot * 10}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você deslocou um zero a mais. {n} × {pot} = {n*pot}."
+      },
+      {
+        "value": "{n + pot}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Você somou em vez de multiplicar. {n} × {pot} = {n*pot}."
+      },
+      {
+        "value": "{n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Multiplicar por {pot} não deixa o número igual. {n} × {pot} = {n*pot}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [3, 7, 12, 25, 8, 45],
+        "pot": [10, 100, 1000],
+        "zeros": "número de zeros de pot"
+      },
+      "constraints": []
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "25", "pot": "100", "zeros": "2" },
+        "question": "25 × 100 = ?",
+        "correct": "2500",
+        "distractors": ["25000", "125", "25"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KB-mult11-L2-choice",
+    "unit_id": "KB.5",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} × 11 = ?",
+    "correct": "{n*11}",
+    "feedback_correct": "Para multiplicar por 11: some os dígitos de {n} e insira no meio. {n} × 11 = {n*11}.",
+    "distractors": [
+      {
+        "value": "{n*10 + n - 1}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Quase. Verifique a soma dos dígitos. {n} × 11 = {n*11}."
+      },
+      {
+        "value": "{n*10}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você multiplicou por 10. {n} × 11 = {n} × 10 + {n} = {n*11}."
+      },
+      {
+        "value": "{n*12}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Você foi longe demais. {n} × 11 = {n*11}, não {n*12}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [12, 13, 14, 15, 23, 24, 31, 42]
+      },
+      "constraints": ["n de 2 dígitos", "soma dos dígitos <= 9 para casos simples"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "13" },
+        "question": "13 × 11 = ?",
+        "correct": "143",
+        "distractors": ["142", "130", "156"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KB-quad-L1-choice",
+    "unit_id": "KB.6",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 3,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n}² = ?",
+    "correct": "{n*n}",
+    "feedback_correct": "{n}² = {n} × {n} = {n*n}.",
+    "distractors": [
+      {
+        "value": "{(n+1)*(n+1)}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{(n+1)*(n+1)} = {n+1}². O quadrado de {n} é {n*n}."
+      },
+      {
+        "value": "{n*2}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você multiplicou por 2 em vez de elevar ao quadrado. {n}² = {n} × {n} = {n*n}."
+      },
+      {
+        "value": "{(n-1)*(n-1)}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{(n-1)*(n-1)} = {n-1}². O quadrado de {n} é {n*n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+      },
+      "constraints": ["priorizar n >= 11 onde erro é mais comum"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "13" },
+        "question": "13² = ?",
+        "correct": "169",
+        "distractors": ["196", "26", "144"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KB-cubo-L1-choice",
+    "unit_id": "KB.7",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n}³ = ?",
+    "correct": "{n*n*n}",
+    "feedback_correct": "{n}³ = {n} × {n} × {n} = {n*n*n}.",
+    "distractors": [
+      {
+        "value": "{n*n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você calculou {n}², não {n}³. Faltou multiplicar por {n} mais uma vez."
+      },
+      {
+        "value": "{n*3}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você multiplicou por 3. {n}³ = {n} × {n} × {n} = {n*n*n}."
+      },
+      {
+        "value": "{(n+1)*(n+1)*(n+1)}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Esse é {n+1}³. O cubo de {n} é {n*n*n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      },
+      "constraints": []
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "4" },
+        "question": "4³ = ?",
+        "correct": "64",
+        "distractors": ["16", "12", "125"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KB-pot2-L1-choice",
+    "unit_id": "KB.8",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 3,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "2^{n} = ?",
+    "correct": "{2**n}",
+    "feedback_correct": "2^{n} = {2**n}. A sequência das potências de 2: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024...",
+    "distractors": [
+      {
+        "value": "{2**(n-1)}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{2**(n-1)} = 2^{n-1}. Você parou uma potência antes. 2^{n} = {2**n}."
+      },
+      {
+        "value": "{2**(n+1)}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{2**(n+1)} = 2^{n+1}. Você foi uma potência além. 2^{n} = {2**n}."
+      },
+      {
+        "value": "{n*2}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você multiplicou o expoente por 2. 2^{n} significa 2 multiplicado por si mesmo {n} vezes = {2**n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      },
+      "constraints": ["priorizar n >= 4 onde off-by-one é mais comum"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "5" },
+        "question": "2^5 = ?",
+        "correct": "32",
+        "distractors": ["16", "64", "10"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KB-equiv-frac-dec-L1-corr",
+    "unit_id": "KB.9",
+    "level": "L1",
+    "format": "numeric_indirect",
+    "context": "bare",
+    "interaction": "I3",
+    "timed": true,
+    "time_limit": 5,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Associe cada fração ao seu equivalente decimal e porcentagem.",
+    "correct": "{pairs}",
+    "feedback_correct": "Conversões frequentes: 1/4=0.25=25%, 1/2=0.5=50%, 3/4=0.75=75%, 1/5=0.2=20%.",
+    "distractors": [
+      {
+        "value": "1/4 com 0.4",
+        "distractor_type": "ERRO_CONVERSÃO",
+        "feedback": "1/4 = 0.25, não 0.4. 0.4 = 2/5."
+      },
+      {
+        "value": "1/4 com 4%",
+        "distractor_type": "ERRO_CONVERSÃO",
+        "feedback": "1/4 = 25%, não 4%. Para converter: divida e multiplique por 100."
+      }
+    ],
+    "params": {
+      "vars": {
+        "pairs": [
+          {"frac": "1/4",  "dec": "0.25", "pct": "25%"},
+          {"frac": "1/2",  "dec": "0.5",  "pct": "50%"},
+          {"frac": "3/4",  "dec": "0.75", "pct": "75%"},
+          {"frac": "1/5",  "dec": "0.2",  "pct": "20%"},
+          {"frac": "1/3",  "dec": "0.333...", "pct": "33.3%"},
+          {"frac": "2/5",  "dec": "0.4",  "pct": "40%"},
+          {"frac": "3/5",  "dec": "0.6",  "pct": "60%"}
+        ]
+      },
+      "constraints": ["3 pares por instância", "variar conjuntos entre instâncias"]
+    },
+    "seed_examples": [
+      {
+        "params": { "pairs": [{"frac":"1/4","dec":"0.25","pct":"25%"},{"frac":"1/2","dec":"0.5","pct":"50%"},{"frac":"3/4","dec":"0.75","pct":"75%"}] },
+        "question": "Associe: 1/4 · 1/2 · 3/4 com seus decimais e porcentagens.",
+        "correct": "1/4↔0.25↔25%, 1/2↔0.5↔50%, 3/4↔0.75↔75%",
+        "distractors": ["1/4 com 0.4", "1/2 com 5%"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KB-fat-freq-L1-choice",
+    "unit_id": "KB.10",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual é a fatoração de {n} em fatores primos?",
+    "correct": "{factored}",
+    "feedback_correct": "{n} = {factored}.",
+    "distractors": [
+      {
+        "value": "{factored_incomplete}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Fatoração incompleta. {factored_incomplete} ainda tem fatores compostos. {n} = {factored}."
+      },
+      {
+        "value": "{factored_wrong}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Um dos fatores está errado. Verifique: {factored_wrong} ≠ {n}. A fatoração correta é {factored}."
+      },
+      {
+        "value": "{n} é primo",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{n} não é primo. {n} = {factored}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [12, 18, 24, 30, 36, 48, 60, 72],
+        "factored": "fatoração completa em primos",
+        "factored_incomplete": "fatoração parada antes do fim",
+        "factored_wrong": "fatoração com um fator errado"
+      },
+      "constraints": ["n composto", "n com pelo menos 2 fatores primos distintos"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "12", "factored": "2² × 3", "factored_incomplete": "4 × 3", "factored_wrong": "2 × 3" },
+        "question": "Qual é a fatoração de 12 em fatores primos?",
+        "correct": "2² × 3",
+        "distractors": ["4 × 3", "2 × 3", "12 é primo"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KB-log-elem-L1-choice",
+    "unit_id": "KB.11",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "log_{b}({n}) = ?",
+    "correct": "{exp}",
+    "feedback_correct": "log_{b}({n}) = {exp} porque {b}^{exp} = {n}.",
+    "distractors": [
+      {
+        "value": "{exp + 1}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{b}^{exp+1} = {b**(exp+1)}, não {n}. log_{b}({n}) = {exp}."
+      },
+      {
+        "value": "{n/b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "log não é divisão. log_{b}({n}) pergunta: {b} elevado a quanto dá {n}? Resposta: {exp}."
+      },
+      {
+        "value": "{b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você retornou a base. log_{b}({n}) = {exp}, pois {b}^{exp} = {n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "b": [2, 3, 5, 10],
+        "exp": [1, 2, 3, 4],
+        "n": "b ** exp"
+      },
+      "constraints": ["n = b^exp exato", "pares conhecidos: log2(8)=3, log10(100)=2, log3(9)=2"]
+    },
+    "seed_examples": [
+      {
+        "params": { "b": "2", "n": "8", "exp": "3" },
+        "question": "log₂(8) = ?",
+        "correct": "3",
+        "distractors": ["4", "4", "2"]
+      },
+      {
+        "params": { "b": "10", "n": "100", "exp": "2" },
+        "question": "log₁₀(100) = ?",
+        "correct": "2",
+        "distractors": ["3", "10", "20"]
+      }
+    ]
+  }
+]

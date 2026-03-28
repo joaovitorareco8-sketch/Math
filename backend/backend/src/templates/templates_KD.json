@@ -1,0 +1,660 @@
+[
+  {
+    "template_id": "KD-div2-L1-choice",
+    "unit_id": "KD.1",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 2,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} é divisível por 2?",
+    "correct": "{result}",
+    "feedback_correct": "{n} {is_or_not} divisível por 2 pois {last_digit} {is_or_not_even} par.",
+    "distractors": [
+      {
+        "value": "{wrong}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Divisibilidade por 2: basta verificar o último dígito. {last_digit} {is_or_not_even} par, então {n} {is_or_not} divisível por 2."
+      },
+      {
+        "value": "Depende",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "A regra é simples e definitiva: último dígito par → divisível. {n} termina em {last_digit}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [124, 307, 450, 893, 1736, 2051, 888, 763],
+        "last_digit": "último dígito de n",
+        "result": "Sim ou Não",
+        "wrong": "resposta oposta",
+        "is_or_not": "é ou não é",
+        "is_or_not_even": "é ou não é"
+      },
+      "constraints": ["incluir casos pares e ímpares"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "307", "last_digit": "7", "result": "Não", "wrong": "Sim" },
+        "question": "307 é divisível por 2?",
+        "correct": "Não",
+        "distractors": ["Sim", "Depende"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-div3-L1-choice",
+    "unit_id": "KD.2",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 3,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} é divisível por 3?",
+    "correct": "{result}",
+    "feedback_correct": "Soma dos dígitos de {n}: {digit_sum}. {digit_sum} {div_or_not} divisível por 3, então {n} {is_or_not}.",
+    "distractors": [
+      {
+        "value": "{wrong}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Regra do 3: some todos os dígitos. {n} → {digit_sum}. {digit_sum} {div_or_not} divisível por 3."
+      },
+      {
+        "value": "Divisível pois é par",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Paridade não determina divisibilidade por 3. Some os dígitos: {digit_sum}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [351, 214, 729, 502, 1233, 874, 612, 457],
+        "digit_sum": "soma de todos os dígitos de n",
+        "result": "Sim ou Não",
+        "wrong": "resposta oposta",
+        "div_or_not": "é ou não é",
+        "is_or_not": "é ou não é"
+      },
+      "constraints": ["incluir casos onde soma parcial enganaria (ex: 351 — soma=9)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "351", "digit_sum": "9", "result": "Sim", "wrong": "Não", "div_or_not": "é", "is_or_not": "é" },
+        "question": "351 é divisível por 3?",
+        "correct": "Sim",
+        "distractors": ["Não", "Divisível pois é par"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-div4-L2-choice",
+    "unit_id": "KD.3",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 3,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} é divisível por 4?",
+    "correct": "{result}",
+    "feedback_correct": "Divisibilidade por 4: verifique os dois últimos dígitos. {last_two} ÷ 4 = {last_two_div}. {result}.",
+    "distractors": [
+      {
+        "value": "{wrong}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Para divisibilidade por 4, verifique os dois últimos dígitos, não só o último. {last_two} ÷ 4 = {last_two_div}."
+      },
+      {
+        "value": "Divisível pois termina em {last_digit}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Último dígito sozinho não basta para 4. Verifique os dois últimos: {last_two}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [124, 138, 312, 214, 1028, 1014, 736, 518],
+        "last_two": "dois últimos dígitos de n",
+        "last_digit": "último dígito de n",
+        "last_two_div": "last_two / 4 se inteiro, senão 'não exato'",
+        "result": "Sim ou Não",
+        "wrong": "resposta oposta"
+      },
+      "constraints": ["incluir casos onde último dígito par mas não divisível por 4 (ex: 138)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "138", "last_two": "38", "last_digit": "8", "last_two_div": "não exato", "result": "Não", "wrong": "Sim" },
+        "question": "138 é divisível por 4?",
+        "correct": "Não",
+        "distractors": ["Sim", "Divisível pois termina em 8"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-div5-L1-choice",
+    "unit_id": "KD.4",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 2,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} é divisível por 5?",
+    "correct": "{result}",
+    "feedback_correct": "{n} termina em {last_digit}. Divisível por 5 se terminar em 0 ou 5.",
+    "distractors": [
+      {
+        "value": "{wrong}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Divisibilidade por 5: último dígito deve ser 0 ou 5. {n} termina em {last_digit}."
+      },
+      {
+        "value": "Divisível pois é múltiplo de 10",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Múltiplos de 10 são divisíveis por 5, mas não são os únicos. Qualquer número terminado em 5 também é."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [135, 242, 700, 893, 1005, 348, 250, 777],
+        "last_digit": "último dígito de n",
+        "result": "Sim ou Não",
+        "wrong": "resposta oposta"
+      },
+      "constraints": ["incluir terminados em 0, 5 e outros dígitos"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "242", "last_digit": "2", "result": "Não", "wrong": "Sim" },
+        "question": "242 é divisível por 5?",
+        "correct": "Não",
+        "distractors": ["Sim", "Divisível pois é múltiplo de 10"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-div6-L2-choice",
+    "unit_id": "KD.5",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} é divisível por 6?",
+    "correct": "{result}",
+    "feedback_correct": "Divisível por 6 = divisível por 2 E por 3. {n}: último dígito {last_digit} ({div2}), soma {digit_sum} ({div3}). {result}.",
+    "distractors": [
+      {
+        "value": "Sim, pois é par",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Par é necessário mas não suficiente. Precisa ser divisível por 3 também. Soma dos dígitos de {n}: {digit_sum}."
+      },
+      {
+        "value": "Sim, pois soma dos dígitos é divisível por 3",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Divisível por 3 é necessário mas não suficiente. Precisa ser par também. {n} termina em {last_digit}."
+      },
+      {
+        "value": "{wrong}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Verifique ambas as condições: par E soma divisível por 3. {n}: {div2} e {div3}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [126, 134, 213, 312, 504, 218, 333, 432],
+        "last_digit": "último dígito de n",
+        "digit_sum": "soma dos dígitos de n",
+        "div2": "é par ou não é par",
+        "div3": "soma divisível por 3 ou não",
+        "result": "Sim ou Não",
+        "wrong": "resposta oposta"
+      },
+      "constraints": ["incluir: div por 6, par mas não /3, /3 mas ímpar, nenhum"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "134", "last_digit": "4", "digit_sum": "8", "div2": "é par", "div3": "8 não é divisível por 3", "result": "Não", "wrong": "Sim" },
+        "question": "134 é divisível por 6?",
+        "correct": "Não",
+        "distractors": ["Sim, pois é par", "Sim, pois soma dos dígitos é divisível por 3", "Sim"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-div8-L2-choice",
+    "unit_id": "KD.6",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} é divisível por 8?",
+    "correct": "{result}",
+    "feedback_correct": "Divisibilidade por 8: verifique os três últimos dígitos. {last_three} ÷ 8 = {div_result}. {result}.",
+    "distractors": [
+      {
+        "value": "{wrong_two}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Para 8, verifique os três últimos dígitos, não dois. {last_three} ÷ 8 = {div_result}."
+      },
+      {
+        "value": "Divisível pois termina em {last_digit}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Último dígito não basta para 8. Verifique os três últimos: {last_three}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [1128, 1124, 2136, 3014, 5008, 4012, 7016, 3018],
+        "last_three": "três últimos dígitos de n",
+        "last_digit": "último dígito de n",
+        "div_result": "last_three / 8 se exato",
+        "result": "Sim ou Não",
+        "wrong_two": "resultado errado usando só dois dígitos"
+      },
+      "constraints": ["incluir casos onde dois últimos dígitos enganariam (ex: 1124 — 24÷8=3 mas 124÷8=15.5)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "1124", "last_three": "124", "last_digit": "4", "div_result": "não exato", "result": "Não", "wrong_two": "Sim, pois 24÷8=3" },
+        "question": "1124 é divisível por 8?",
+        "correct": "Não",
+        "distractors": ["Sim, pois 24÷8=3", "Divisível pois termina em 4"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-div9-L1-choice",
+    "unit_id": "KD.7",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 3,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} é divisível por 9?",
+    "correct": "{result}",
+    "feedback_correct": "Soma dos dígitos de {n}: {digit_sum}. {digit_sum} {div_or_not} divisível por 9.",
+    "distractors": [
+      {
+        "value": "{wrong}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Regra do 9: some todos os dígitos. {n} → {digit_sum}. {digit_sum} {div_or_not} divisível por 9."
+      },
+      {
+        "value": "Sim, pois é divisível por 3",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Divisível por 3 não implica divisível por 9. A soma precisa ser divisível por 9, não só por 3. Soma de {n}: {digit_sum}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [729, 126, 531, 243, 216, 134, 351, 457],
+        "digit_sum": "soma dos dígitos de n",
+        "result": "Sim ou Não",
+        "wrong": "resposta oposta",
+        "div_or_not": "é ou não é"
+      },
+      "constraints": ["incluir casos divisíveis por 3 mas não por 9 (ex: 126 — soma=9... usar 351 soma=9 ok, usar 213 soma=6)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "213", "digit_sum": "6", "result": "Não", "wrong": "Sim", "div_or_not": "não é" },
+        "question": "213 é divisível por 9?",
+        "correct": "Não",
+        "distractors": ["Sim", "Sim, pois é divisível por 3"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-div11-L2-choice",
+    "unit_id": "KD.9",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} é divisível por 11?",
+    "correct": "{result}",
+    "feedback_correct": "Alternando + e - nos dígitos de {n}: {alt_sum}. {alt_sum} {div_or_not} divisível por 11.",
+    "distractors": [
+      {
+        "value": "{wrong_simple_sum}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Para 11, alterne sinais nos dígitos (não some diretamente). {n}: {alt_sum}."
+      },
+      {
+        "value": "{wrong}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Verifique a alternância: {alt_calculation}. Resultado: {alt_sum}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [121, 132, 253, 308, 1001, 2145, 3256, 4378],
+        "alt_sum": "soma alternada dos dígitos",
+        "alt_calculation": "cálculo passo a passo da soma alternada",
+        "result": "Sim ou Não",
+        "wrong": "resposta oposta",
+        "wrong_simple_sum": "resultado usando soma simples dos dígitos",
+        "div_or_not": "é ou não é"
+      },
+      "constraints": ["incluir casos onde soma simples enganaria"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "253", "alt_sum": "2-5+3=0", "alt_calculation": "2-5+3=0", "result": "Sim", "wrong": "Não", "wrong_simple_sum": "Não (soma=10)", "div_or_not": "é" },
+        "question": "253 é divisível por 11?",
+        "correct": "Sim",
+        "distractors": ["Não (soma simples=10)", "Não"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-primo-L1-choice",
+    "unit_id": "KD.10",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual destes é um número primo?",
+    "correct": "{prime}",
+    "feedback_correct": "{prime} é primo — divisível apenas por 1 e por ele mesmo.",
+    "distractors": [
+      {
+        "value": "1",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "1 não é primo por definição. Primo tem exatamente dois divisores: 1 e ele mesmo. 1 tem só um."
+      },
+      {
+        "value": "{composite1}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{composite1} = {factored1}. Tem mais de dois divisores, então não é primo."
+      },
+      {
+        "value": "{composite2}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{composite2} = {factored2}. Não é primo."
+      }
+    ],
+    "params": {
+      "vars": {
+        "prime": [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37],
+        "composite1": "composto próximo do primo",
+        "factored1": "fatoração de composite1",
+        "composite2": "outro composto",
+        "factored2": "fatoração de composite2"
+      },
+      "constraints": ["sempre incluir 1 como distrator"]
+    },
+    "seed_examples": [
+      {
+        "params": { "prime": "17", "composite1": "15", "factored1": "3×5", "composite2": "21", "factored2": "3×7" },
+        "question": "Qual destes é um número primo?",
+        "correct": "17",
+        "distractors": ["1", "15", "21"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-fat-L2-write",
+    "unit_id": "KD.14",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Fatore {n} completamente em fatores primos.",
+    "correct": "{factored}",
+    "feedback_correct": "{n} = {factored}. Divida sucessivamente pelos menores primos até o quociente ser 1.",
+    "distractors": [
+      {
+        "value": "{incomplete}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Fatoração incompleta. {incomplete} ainda contém {remaining} como fator composto. Continue dividindo: {factored}."
+      },
+      {
+        "value": "{missing_exp}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Você listou os fatores sem os expoentes corretos. {n} = {factored}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [12, 18, 24, 36, 48, 60, 72, 90, 120],
+        "factored": "fatoração completa com expoentes",
+        "incomplete": "fatoração parada antes do fim",
+        "remaining": "fator composto residual",
+        "missing_exp": "fatoração sem expoentes"
+      },
+      "constraints": ["n com pelo menos 2 fatores primos distintos"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "36", "factored": "2² × 3²", "incomplete": "4 × 9", "remaining": "4 e 9", "missing_exp": "2 × 3" },
+        "question": "Fatore 36 completamente em fatores primos.",
+        "correct": "2² × 3²",
+        "distractors": ["4 × 9", "2 × 3"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-mdc-L2-write",
+    "unit_id": "KD.15",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Calcule o MDC({a}, {b}).",
+    "correct": "{mdc}",
+    "feedback_correct": "MDC({a},{b}) = {mdc}. Fatore ambos e pegue os fatores comuns com menor expoente: {steps}.",
+    "distractors": [
+      {
+        "value": "{mmc}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você calculou o MMC, não o MDC. MDC usa interseção com menor expoente; MMC usa união com maior expoente. MDC({a},{b}) = {mdc}."
+      },
+      {
+        "value": "{wrong_product}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você multiplicou os fatores comuns em vez de usar o menor expoente. MDC({a},{b}) = {mdc}."
+      },
+      {
+        "value": "{a}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "MDC não é um dos números originais. MDC({a},{b}) = {mdc}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [12, 18, 24, 36, 48],
+        "b": [18, 24, 36, 48, 60],
+        "mdc": "MDC correto",
+        "mmc": "MMC de a e b",
+        "wrong_product": "produto dos fatores comuns sem considerar expoente",
+        "steps": "fatorações e interseção"
+      },
+      "constraints": ["MDC > 1", "a != b"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "12", "b": "18", "mdc": "6", "mmc": "36", "wrong_product": "12", "steps": "12=2²×3, 18=2×3²; comum: 2¹×3¹=6" },
+        "question": "Calcule o MDC(12, 18).",
+        "correct": "6",
+        "distractors": ["36", "12", "3"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-mmc-L2-write",
+    "unit_id": "KD.16",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Calcule o MMC({a}, {b}).",
+    "correct": "{mmc}",
+    "feedback_correct": "MMC({a},{b}) = {mmc}. Fatore ambos e use todos os fatores com maior expoente: {steps}.",
+    "distractors": [
+      {
+        "value": "{mdc}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você calculou o MDC. MMC usa todos os fatores com maior expoente. MMC({a},{b}) = {mmc}."
+      },
+      {
+        "value": "{a*b}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "MMC ≠ produto. O produto é {a*b}, mas MMC({a},{b}) = {mmc} = {a*b} ÷ MDC = {a*b} ÷ {mdc}."
+      },
+      {
+        "value": "{wrong_common}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você usou só os fatores comuns. MMC precisa de todos os fatores, comuns e não comuns. MMC({a},{b}) = {mmc}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [4, 6, 8, 9, 12],
+        "b": [6, 9, 12, 15, 18],
+        "mmc": "MMC correto",
+        "mdc": "MDC de a e b",
+        "wrong_common": "resultado usando só fatores comuns",
+        "steps": "fatorações e união"
+      },
+      "constraints": ["MMC != a*b (para não ser trivial)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "4", "b": "6", "mmc": "12", "mdc": "2", "wrong_common": "2", "steps": "4=2², 6=2×3; união: 2²×3=12" },
+        "question": "Calcule o MMC(4, 6).",
+        "correct": "12",
+        "distractors": ["2", "24", "2"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KD-simp-mdc-L3-write",
+    "unit_id": "KD.19",
+    "level": "L3",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Simplifique a fração {a}/{b} usando o MDC.",
+    "correct": "{simplified}",
+    "feedback_correct": "MDC({a},{b}) = {mdc}. Dividindo: {a}÷{mdc} = {num}, {b}÷{mdc} = {den}. Resultado: {simplified}.",
+    "distractors": [
+      {
+        "value": "{a/2}/{b/2}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você dividiu por 2, não pelo MDC. MDC({a},{b}) = {mdc}. Use {mdc} para simplificar completamente."
+      },
+      {
+        "value": "{a-mdc}/{b-mdc}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Simplificação é divisão, não subtração. Divida numerador e denominador pelo MDC({a},{b}) = {mdc}."
+      },
+      {
+        "value": "{a}/{b}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "A fração ainda não está simplificada. MDC({a},{b}) = {mdc}. Divida ambos por {mdc}: {simplified}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [12, 18, 24, 36, 30],
+        "b": [18, 24, 36, 48, 45],
+        "mdc": "MDC(a,b)",
+        "num": "a / mdc",
+        "den": "b / mdc",
+        "simplified": "num/den"
+      },
+      "constraints": ["MDC > 2 para não ser trivial", "fração não redutível por 2 diretamente ao mínimo"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "18", "b": "24", "mdc": "6", "num": "3", "den": "4", "simplified": "3/4" },
+        "question": "Simplifique a fração 18/24 usando o MDC.",
+        "correct": "3/4",
+        "distractors": ["9/12", "12/18", "18/24"]
+      }
+    ]
+  }
+]

@@ -1,0 +1,515 @@
+[
+  {
+    "template_id": "KG-dec-add-L2-choice",
+    "unit_id": "KG.1",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 5,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a} + {b} = ? (use decomposição aditiva)",
+    "correct": "{a+b}",
+    "feedback_correct": "Decomponha {b} = {b1} + {b2} onde {a} + {b1} = {round_a}. Então {round_a} + {b2} = {a+b}.",
+    "distractors": [
+      {
+        "value": "{a+b+1}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Erro de carry. {a} + {b} = {a+b}, não {a+b+1}."
+      },
+      {
+        "value": "{a+b-1}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Faltou 1 no resultado. {a} + {b} = {a+b}."
+      },
+      {
+        "value": "{a+b-10}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Decomposição incorreta. {a} + {b} = {a+b}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [37, 48, 56, 73, 65],
+        "b": [45, 35, 27, 38, 47],
+        "b1": "complemento de a para a próxima dezena",
+        "b2": "b - b1",
+        "round_a": "próxima dezena acima de a"
+      },
+      "constraints": ["a e b de dois dígitos", "resultado < 200"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "37", "b": "45", "b1": "3", "b2": "42", "round_a": "40" },
+        "question": "37 + 45 = ? (use decomposição aditiva)",
+        "correct": "82",
+        "distractors": ["83", "81", "72"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KG-comp-mult-L2-choice",
+    "unit_id": "KG.5",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 5,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} × {m} = ? (use complemento multiplicativo)",
+    "correct": "{n*m}",
+    "feedback_correct": "{n} = {base} - {diff}. Então {n}×{m} = {base}×{m} - {diff}×{m} = {base*m} - {diff*m} = {n*m}.",
+    "distractors": [
+      {
+        "value": "{base*m}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você calculou {base}×{m} mas esqueceu de subtrair {diff}×{m} = {diff*m}. Resultado: {base*m} - {diff*m} = {n*m}."
+      },
+      {
+        "value": "{n*m + m}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Subtração incompleta. {n}×{m} = {base*m} - {diff*m} = {n*m}."
+      },
+      {
+        "value": "{n*m - m}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você subtraiu {m} em vez de {diff*m}. Resultado correto: {n*m}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [98, 99, 97, 96, 995],
+        "m": [6, 7, 8, 9, 4],
+        "base": "próxima potência de 10 acima de n",
+        "diff": "base - n"
+      },
+      "constraints": ["n próximo de potência de 10 (diff <= 5)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "99", "m": "7", "base": "100", "diff": "1" },
+        "question": "99 × 7 = ? (use complemento multiplicativo)",
+        "correct": "693",
+        "distractors": ["700", "700", "686"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KG-dup-met-L2-choice",
+    "unit_id": "KG.7",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a} × {b} = ? (use duplicação e metade)",
+    "correct": "{a*b}",
+    "feedback_correct": "Dobre {a} e tome metade de {b}: {a*2} × {b/2} = {a*b}. Mais fácil de calcular.",
+    "distractors": [
+      {
+        "value": "{a*2 * b/2 - a}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você aplicou a duplicação mas errou a metade. {a*2} × {b/2} = {a*b}."
+      },
+      {
+        "value": "{a + b}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Você somou em vez de multiplicar. {a} × {b} = {a*b}."
+      },
+      {
+        "value": "{a*b + a}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Quase. {a} × {b} = {a*b}, não {a*b+a}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [15, 25, 35, 45, 16, 14],
+        "b": [4, 4, 6, 6, 5, 5]
+      },
+      "constraints": ["b par para metade inteira"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "15", "b": "4" },
+        "question": "15 × 4 = ? (use duplicação e metade)",
+        "correct": "60",
+        "distractors": ["55", "19", "65"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KG-compensacao-L2-choice",
+    "unit_id": "KG.9",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 5,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a} + {b} = ? (use compensação)",
+    "correct": "{a+b}",
+    "feedback_correct": "Arredonde {a} para {round_a} (+{delta}). Então {round_a} + {b} = {round_a + b}, subtraia {delta}: {a+b}.",
+    "distractors": [
+      {
+        "value": "{round_a + b}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você arredondou mas esqueceu de compensar. Subtraia {delta}: {round_a+b} - {delta} = {a+b}."
+      },
+      {
+        "value": "{a+b+delta}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você somou o delta em vez de subtrair. {round_a+b} - {delta} = {a+b}."
+      },
+      {
+        "value": "{a+b-1}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Erro de 1. {a} + {b} = {a+b}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [98, 97, 199, 298, 48],
+        "b": [47, 56, 63, 47, 37],
+        "round_a": "a arredondado para cima (próxima dezena/centena)",
+        "delta": "round_a - a"
+      },
+      "constraints": ["delta <= 5"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "98", "b": "47", "round_a": "100", "delta": "2" },
+        "question": "98 + 47 = ? (use compensação)",
+        "correct": "145",
+        "distractors": ["147", "149", "144"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KG-simp-antes-L3-write",
+    "unit_id": "KG.10",
+    "level": "L3",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Calcule {a}/{b} × {c}/{d} simplificando antes de multiplicar.",
+    "correct": "{result}",
+    "feedback_correct": "Cancele {mdc_ac} entre {a} e {c}, e {mdc_bd} entre {b} e {d}: ({a/mdc_ac})/({b/mdc_bd}) × ({c/mdc_ac})/({d/mdc_bd}) = {result}.",
+    "distractors": [
+      {
+        "value": "{a*c}/{b*d}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Correto mas não simplificado. Simplifique antes: {result}."
+      },
+      {
+        "value": "{a*c / mdc_ac} / {b*d}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Você cancelou só num par. Cancele cruzado: {a} com {d} e {b} com {c} se possível. Resultado: {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [4, 6, 9, 8],
+        "b": [5, 7, 10, 9],
+        "c": [15, 14, 5, 3],
+        "d": [8, 9, 6, 4],
+        "mdc_ac": "MDC(a, c) ou MDC(a,d) se cancelamento cruzado",
+        "mdc_bd": "MDC(b, d) ou MDC(b,c) se cancelamento cruzado",
+        "result": "fração simplificada do produto"
+      },
+      "constraints": ["cancelamento cruzado possível", "resultado simples"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "4", "b": "5", "c": "15", "d": "8", "mdc_ac": "4 e 8 por 4; 5 e 15 por 5", "mdc_bd": "—", "result": "3/2" },
+        "question": "Calcule 4/5 × 15/8 simplificando antes de multiplicar.",
+        "correct": "3/2",
+        "distractors": ["60/40", "30/40", "15/10"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KG-cancel-L3-write",
+    "unit_id": "KG.11",
+    "level": "L3",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Simplifique: ({a}×{b})/({c}×{b})",
+    "correct": "{a}/{c}",
+    "feedback_correct": "O fator {b} aparece no numerador e denominador. Cancele: ({a}×{b})/({c}×{b}) = {a}/{c}.",
+    "distractors": [
+      {
+        "value": "{a}/{c*b}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Você cancelou só do denominador. O {b} cancela completamente. ({a}×{b})/({c}×{b}) = {a}/{c}."
+      },
+      {
+        "value": "{a*b}/{c}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Você cancelou só do numerador. O {b} cancela dos dois lados. ({a}×{b})/({c}×{b}) = {a}/{c}."
+      },
+      {
+        "value": "({a}+{b})/({c}+{b})",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Cancelamento é para fatores multiplicativos, não somados. ({a}×{b})/({c}×{b}) = {a}/{c}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [3, 5, 7, "x", "2x"],
+        "b": [4, 6, "y", "z", 5],
+        "c": [2, 4, 3, "2y", 3]
+      },
+      "constraints": ["b != a, b != c"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "3", "b": "5", "c": "2" },
+        "question": "Simplifique: (3×5)/(2×5)",
+        "correct": "3/2",
+        "distractors": ["3/10", "15/2", "(3+5)/(2+5)"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KG-div-dec-L3-write",
+    "unit_id": "KG.12",
+    "level": "L3",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{n} ÷ {d} = ? (use decomposição do dividendo)",
+    "correct": "{n/d}",
+    "feedback_correct": "Decomponha {n} = {n1} + {n2} onde {n1} é divisível por {d}. {n1}÷{d} = {n1/d}, {n2}÷{d} = {n2/d}. Total: {n/d}.",
+    "distractors": [
+      {
+        "value": "{n/d + 1}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Erro de 1. {n} ÷ {d} = {n/d}."
+      },
+      {
+        "value": "{n1/d}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você dividiu só {n1}. Falta somar {n2}÷{d} = {n2/d}. Total: {n/d}."
+      },
+      {
+        "value": "{n/d - 1}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Faltou 1. {n} ÷ {d} = {n/d}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [846, 735, 624, 952, 468],
+        "d": [6, 5, 4, 7, 9],
+        "n1": "maior múltiplo de d menor ou igual a n com mesma centena",
+        "n2": "n - n1"
+      },
+      "constraints": ["n divisível por d", "n1 óbvio (ex: 840 para 846÷6)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "846", "d": "6", "n1": "840", "n2": "6" },
+        "question": "846 ÷ 6 = ? (use decomposição do dividendo)",
+        "correct": "141",
+        "distractors": ["142", "140", "140"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KG-simp-alg-L3-write",
+    "unit_id": "KG.14",
+    "level": "L3",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Simplifique: {expr}",
+    "correct": "{result}",
+    "feedback_correct": "Agrupe termos semelhantes: {steps}. Resultado: {result}.",
+    "distractors": [
+      {
+        "value": "{wrong_combine}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você combinou termos não semelhantes. Só some termos com a mesma variável e expoente. {steps}. Resultado: {result}."
+      },
+      {
+        "value": "{wrong_sign}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Erro de sinal ao agrupar. Atenção aos sinais: {steps}. Resultado: {result}."
+      },
+      {
+        "value": "{unsimplified}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "A expressão ainda pode ser simplificada. {steps}. Resultado: {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "expr": [
+          "3x + 2x² - x + 4x²",
+          "5ab - 3a + 2ab + a",
+          "4x² - 2x + x² + 5x",
+          "2a + 3b - a + b"
+        ],
+        "result": "expressão simplificada",
+        "steps": "agrupamento passo a passo",
+        "wrong_combine": "resultado combinando termos não semelhantes",
+        "wrong_sign": "resultado com erro de sinal",
+        "unsimplified": "expressão parcialmente simplificada"
+      },
+      "constraints": ["pelo menos 2 pares de termos semelhantes"]
+    },
+    "seed_examples": [
+      {
+        "params": { "expr": "3x + 2x² - x + 4x²", "result": "6x² + 2x", "steps": "x²: 2x²+4x²=6x²; x: 3x-x=2x", "wrong_combine": "9x³", "wrong_sign": "6x² - 2x", "unsimplified": "3x + 6x² - x" },
+        "question": "Simplifique: 3x + 2x² - x + 4x²",
+        "correct": "6x² + 2x",
+        "distractors": ["9x³", "6x² - 2x", "3x + 6x² - x"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KG-plaus-L2-choice",
+    "unit_id": "KG.16",
+    "level": "L2",
+    "format": "estimation",
+    "context": "numeric_context",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Um aluno calculou {expr} = {wrong_result}. O resultado é plausível?",
+    "correct": "Não — ordem de grandeza errada",
+    "feedback_correct": "Estimando: {estimation}. O resultado esperado é {expected_magnitude}, não {wrong_result}.",
+    "distractors": [
+      {
+        "value": "Sim, parece correto",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Estimando {expr} ≈ {estimation}. O resultado deveria ser da ordem de {expected_magnitude}. {wrong_result} está muito {direction}."
+      },
+      {
+        "value": "Não consigo verificar sem calcular",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Estimativa rápida basta: {estimation} ≈ {expected_magnitude}. Não precisa calcular exatamente para detectar o erro."
+      }
+    ],
+    "params": {
+      "vars": {
+        "expr": ["48 × 52", "347 + 289", "15% de 200", "√81"],
+        "wrong_result": "resultado errado por ordem de grandeza",
+        "estimation": "estimativa rápida da expressão",
+        "expected_magnitude": "ordem de grandeza correta",
+        "direction": "alto ou baixo"
+      },
+      "constraints": ["erro de ordem de grandeza óbvio (10x ou mais)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "expr": "48 × 52", "wrong_result": "250", "estimation": "≈ 50×50 = 2500", "expected_magnitude": "~2500", "direction": "baixo" },
+        "question": "Um aluno calculou 48 × 52 = 250. O resultado é plausível?",
+        "correct": "Não — ordem de grandeza errada",
+        "distractors": ["Sim, parece correto", "Não consigo verificar sem calcular"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KG-comb-prop-L3-path",
+    "unit_id": "KG.15",
+    "level": "L3",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I7",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "none",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Calcule {expr} da forma mais eficiente.",
+    "correct": "{result}",
+    "feedback_correct": "Caminho mais eficiente: {optimal_path}. Resultado: {result}.",
+    "distractors": [
+      {
+        "value": "{brute_force_result}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Correto mas ineficiente. Use {optimal_path} para chegar em {result} com menos passos."
+      }
+    ],
+    "params": {
+      "vars": {
+        "expr": [
+          "25 × 48",
+          "125 × 32",
+          "99 × 13",
+          "75 × 12"
+        ],
+        "result": "resultado correto",
+        "optimal_path": "sequência de propriedades mais eficiente",
+        "brute_force_result": "resultado via algoritmo longo"
+      },
+      "constraints": ["expressão com atalho claro (fatoração, complemento, distributiva)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "expr": "25 × 48", "result": "1200", "optimal_path": "25×4=100, 100×12=1200 (48=4×12)" },
+        "question": "Calcule 25 × 48 da forma mais eficiente.",
+        "correct": "1200",
+        "distractors": ["1200 via algoritmo longo"]
+      }
+    ]
+  }
+]

@@ -1,0 +1,532 @@
+[
+  {
+    "template_id": "KH-frac-div-L4-write",
+    "unit_id": "KH.1",
+    "level": "L4",
+    "format": "numeric_indirect",
+    "context": "numeric_context",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "none",
+    "transfer_condition": "TC.4",
+    "integration_pair_id": "IP.1",
+    "units_required": ["KE.4", "KE.8", "KD.15", "KD.19"],
+    "question": "Simplifique completamente: {expr}",
+    "correct": "{result}",
+    "feedback_correct": "Fatore numerador e denominador: {factoring_steps}. Cancele fatores comuns: {cancel_steps}. Resultado: {result}.",
+    "distractors": [
+      {
+        "value": "{partial_simplify}",
+        "distractor_type": "MISSING_PREREQUISITE",
+        "feedback": "Simplificação incompleta. MDC({num},{den}) = {mdc}, não {partial_mdc}. Use fatoração completa: {result}."
+      },
+      {
+        "value": "{wrong_cancel}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você cancelou um fator que não é comum. Verifique: {factoring_steps}. Resultado: {result}."
+      },
+      {
+        "value": "{num}/{den}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "A fração ainda não está no mínimo. MDC({num},{den}) = {mdc}. Divida ambos: {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "expr": ["(12×15)/(18×10)", "(24×35)/(36×14)", "(30×16)/(20×24)"],
+        "result": "fração simplificada",
+        "factoring_steps": "fatoração de cada fator",
+        "cancel_steps": "cancelamentos cruzados",
+        "partial_simplify": "simplificação parcial",
+        "partial_mdc": "MDC parcial usado",
+        "wrong_cancel": "resultado com cancelamento inválido",
+        "num": "numerador antes de simplificar",
+        "den": "denominador antes de simplificar",
+        "mdc": "MDC correto"
+      },
+      "constraints": ["cancelamento cruzado necessário", "resultado irredutível simples"]
+    },
+    "seed_examples": [
+      {
+        "params": { "expr": "(12×15)/(18×10)", "result": "1/1 = 1", "factoring_steps": "12=2²×3, 15=3×5, 18=2×3², 10=2×5", "cancel_steps": "cancela 2²×3×5 de ambos", "partial_simplify": "2/3", "partial_mdc": "MDC(180,180)=60 usado errado", "wrong_cancel": "12/18 = 2/3 ignorando 15/10", "num": "180", "den": "180", "mdc": "180" },
+        "question": "Simplifique completamente: (12×15)/(18×10)",
+        "correct": "1",
+        "distractors": ["2/3", "15/18", "180/180"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KH-fat-frac-L4-write",
+    "unit_id": "KH.2",
+    "level": "L4",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "none",
+    "transfer_condition": "TC.4",
+    "integration_pair_id": "IP.2",
+    "units_required": ["KD.14", "KE.4", "KE.8"],
+    "question": "Simplifique: ({a}² - {b}²) / ({a} + {b})",
+    "correct": "{a} - {b}",
+    "feedback_correct": "Fatore o numerador: {a}² - {b}² = ({a}+{b})({a}-{b}). Cancele ({a}+{b}): resultado = {a} - {b}.",
+    "distractors": [
+      {
+        "value": "{a} + {b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você cancelou errado. ({a}²-{b}²)/({a}+{b}) = ({a}+{b})({a}-{b})/({a}+{b}) = {a}-{b}, não {a}+{b}."
+      },
+      {
+        "value": "({a}² - {b}²) / ({a} + {b})",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Fatore o numerador como diferença de quadrados: {a}²-{b}² = ({a}+{b})({a}-{b}). Então cancele ({a}+{b})."
+      },
+      {
+        "value": "{a}² - {b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você cancelou só o {b}² com {b}. Use diferença de quadrados: ({a}+{b})({a}-{b})/({a}+{b}) = {a}-{b}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": ["x", "y", 3, 5],
+        "b": [1, 2, "y", "z"]
+      },
+      "constraints": ["a != b"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "x", "b": "2" },
+        "question": "Simplifique: (x² - 4) / (x + 2)",
+        "correct": "x - 2",
+        "distractors": ["x + 2", "(x²-4)/(x+2)", "x² - 2"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KH-pot-rad-L4-write",
+    "unit_id": "KH.3",
+    "level": "L4",
+    "format": "symbolic",
+    "context": "numeric_context",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "none",
+    "transfer_condition": "TC.4",
+    "integration_pair_id": "IP.3",
+    "units_required": ["KC.20", "KC.21", "KF.4"],
+    "question": "Simplifique: {expr}",
+    "correct": "{result}",
+    "feedback_correct": "Converta raiz para expoente fracionário: {conv_step}. Aplique propriedades de potência: {prop_step}. Resultado: {result}.",
+    "distractors": [
+      {
+        "value": "{wrong_order}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Ordem das operações importa. {conv_step}. Depois: {prop_step}. Resultado: {result}."
+      },
+      {
+        "value": "{wrong_exp}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Expoente fracionário incorreto. √a = a^(1/2), ∛a = a^(1/3). {conv_step}. Resultado: {result}."
+      },
+      {
+        "value": "{partial}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Simplificação incompleta. Continue: {prop_step}. Resultado: {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "expr": ["√(x⁴)", "∛(x⁶)", "(√x)⁴", "x^(2/3) × x^(1/3)"],
+        "result": "forma simplificada",
+        "conv_step": "conversão raiz → expoente",
+        "prop_step": "propriedade de potência aplicada",
+        "wrong_order": "resultado com ordem errada",
+        "wrong_exp": "resultado com expoente errado",
+        "partial": "resultado parcialmente simplificado"
+      },
+      "constraints": ["resultado deve ser potência simples ou inteiro"]
+    },
+    "seed_examples": [
+      {
+        "params": { "expr": "√(x⁴)", "result": "x²", "conv_step": "√(x⁴) = (x⁴)^(1/2)", "prop_step": "x^(4×1/2) = x²", "wrong_order": "x⁴/2 = x²... (correto por acaso)", "wrong_exp": "x^(1/8)", "partial": "(x⁴)^(1/2)" },
+        "question": "Simplifique: √(x⁴)",
+        "correct": "x²",
+        "distractors": ["x⁸", "x^(1/8)", "x^(4/2) não simplificado"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KH-log-pot-L4-write",
+    "unit_id": "KH.4",
+    "level": "L4",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "none",
+    "transfer_condition": "TC.4",
+    "integration_pair_id": "IP.4",
+    "units_required": ["KC.13", "KC.14", "KF.8", "KF.9"],
+    "question": "Calcule: {expr}",
+    "correct": "{result}",
+    "feedback_correct": "{step1}. {step2}. Resultado: {result}.",
+    "distractors": [
+      {
+        "value": "{wrong_prop}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Propriedade aplicada incorretamente. {step1}. {step2}. Resultado: {result}."
+      },
+      {
+        "value": "{wrong_base}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Confusão entre base do log e expoente. {step1}. Resultado: {result}."
+      },
+      {
+        "value": "{partial}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Continue a simplificação. {step2}. Resultado: {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "expr": [
+          "log₂(8³)",
+          "log₃(9²)",
+          "log(10⁴)",
+          "log₂(4) + log₂(8)"
+        ],
+        "result": "valor numérico",
+        "step1": "primeiro passo (propriedade ou conversão)",
+        "step2": "segundo passo",
+        "wrong_prop": "resultado com propriedade errada",
+        "wrong_base": "resultado com base confundida",
+        "partial": "expressão parcialmente simplificada"
+      },
+      "constraints": ["resultado inteiro", "requer 2 propriedades combinadas"]
+    },
+    "seed_examples": [
+      {
+        "params": { "expr": "log₂(8³)", "result": "9", "step1": "log₂(8³) = 3×log₂(8)", "step2": "log₂(8) = 3, então 3×3 = 9", "wrong_prop": "log₂(8)³ = 3³ = 27", "wrong_base": "log₈(2³) = 3/3 = 1", "partial": "3×log₂(8)" },
+        "question": "Calcule: log₂(8³)",
+        "correct": "9",
+        "distractors": ["27", "1", "3×log₂(8)"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KH-alg-mista-L4-write",
+    "unit_id": "KH.5",
+    "level": "L4",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "none",
+    "transfer_condition": "TC.4",
+    "integration_pair_id": "IP.5",
+    "units_required": ["KG.14", "KC.8", "KC.11", "KC.13"],
+    "question": "Simplifique completamente: {expr}",
+    "correct": "{result}",
+    "feedback_correct": "Respeite a prioridade: {priority_step}. Agrupe semelhantes: {group_step}. Resultado: {result}.",
+    "distractors": [
+      {
+        "value": "{wrong_priority}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Prioridade das operações alterada. Multiplicação antes de adição: {priority_step}. Resultado: {result}."
+      },
+      {
+        "value": "{wrong_sign}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Erro de sinal na expansão. Atenção ao distribuir negativos: {priority_step}. Resultado: {result}."
+      },
+      {
+        "value": "{wrong_combine}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Termos não semelhantes combinados. x² e x são diferentes. {group_step}. Resultado: {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "expr": [
+          "2(x + 3) - x² + 4x - 6",
+          "3x² - 2(x - 1) + x²",
+          "(x + 2)² - x² + 3x",
+          "4x - 3(2x - 1) + x²"
+        ],
+        "result": "expressão simplificada",
+        "priority_step": "expansão respeitando prioridade",
+        "group_step": "agrupamento de termos semelhantes",
+        "wrong_priority": "resultado com prioridade errada",
+        "wrong_sign": "resultado com erro de sinal",
+        "wrong_combine": "resultado combinando termos não semelhantes"
+      },
+      "constraints": ["pelo menos 2 etapas necessárias", "resultado mais simples que a expressão original"]
+    },
+    "seed_examples": [
+      {
+        "params": { "expr": "2(x + 3) - x² + 4x - 6", "result": "-x² + 6x", "priority_step": "2x+6 - x² + 4x - 6", "group_step": "-x²: -x²; x: 2x+4x=6x; constante: 6-6=0", "wrong_priority": "-x² + 8x + 6", "wrong_sign": "-x² + 6x + 12", "wrong_combine": "-x³ + 6" },
+        "question": "Simplifique: 2(x + 3) - x² + 4x - 6",
+        "correct": "-x² + 6x",
+        "distractors": ["-x² + 8x + 6", "-x² + 6x + 12", "-x³ + 6"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KH-plaus-estrategia-L4-path",
+    "unit_id": "KH.6",
+    "level": "L4",
+    "format": "verbal_simple",
+    "context": "verbal_context",
+    "interaction": "I7",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "none",
+    "transfer_condition": "TC.4",
+    "integration_pair_id": "IP.6",
+    "units_required": ["KA.4", "KG.16", "KG.15"],
+    "question": "{problema}. Antes de calcular, estime a ordem de grandeza do resultado e escolha a estratégia.",
+    "correct": "{correct_strategy}",
+    "feedback_correct": "Estimativa: {estimation}. Ordem esperada: {magnitude}. Estratégia adequada: {correct_strategy}. Resultado: {result}.",
+    "distractors": [
+      {
+        "value": "{wrong_strategy}",
+        "distractor_type": "INTEGRATION_NOT_DEVELOPED",
+        "feedback": "{wrong_strategy} funciona mas é ineficiente. Estimando {estimation}, a estratégia {correct_strategy} é mais direta."
+      },
+      {
+        "value": "{implausible_result}",
+        "distractor_type": "INTEGRATION_NOT_DEVELOPED",
+        "feedback": "O resultado {implausible_result} é implausível. Estimando: {estimation} ≈ {magnitude}. Use {correct_strategy}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "problema": [
+          "Calcule 48 × 52",
+          "Calcule 0.25 × 360",
+          "Calcule 15% de 480"
+        ],
+        "correct_strategy": "estratégia eficiente com justificativa",
+        "wrong_strategy": "estratégia válida mas ineficiente",
+        "estimation": "estimativa rápida",
+        "magnitude": "ordem de grandeza esperada",
+        "result": "resultado correto",
+        "implausible_result": "resultado fora da ordem esperada"
+      },
+      "constraints": ["problema tem atalho estratégico não óbvio"]
+    },
+    "seed_examples": [
+      {
+        "params": { "problema": "Calcule 48 × 52", "correct_strategy": "(50-2)(50+2) = 50²-4 = 2496", "wrong_strategy": "algoritmo longo", "estimation": "≈50×50=2500", "magnitude": "~2500", "result": "2496", "implausible_result": "250" },
+        "question": "Calcule 48 × 52. Antes de calcular, estime a ordem de grandeza e escolha a estratégia.",
+        "correct": "(50-2)(50+2) = 2500-4 = 2496",
+        "distractors": ["algoritmo longo (correto mas ineficiente)", "250 (ordem errada)"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KH-sub-alg-L5-seq",
+    "unit_id": "KH.7",
+    "level": "L5",
+    "format": "symbolic",
+    "context": "mixed",
+    "interaction": "I6",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "none",
+    "transfer_condition": null,
+    "integration_pair_id": "IP.7",
+    "units_required": ["KC.8", "KC.13", "KC.14", "KG.14", "KG.15"],
+    "question": "Resolva passo a passo: {expr}",
+    "correct": "{result}",
+    "feedback_correct": "Passo 1: {step1}. Passo 2: {step2}. Passo 3: {step3}. Resultado: {result}.",
+    "distractors": [
+      {
+        "value": "{wrong_step1}",
+        "distractor_type": "MISSING_PREREQUISITE",
+        "feedback": "Erro no passo 1. {step1} é o primeiro passo correto. Depois: {step2}, {step3}. Resultado: {result}."
+      },
+      {
+        "value": "{wrong_order}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Ordem das operações incorreta. Comece por: {step1}. Depois: {step2}. Resultado: {result}."
+      },
+      {
+        "value": "{partial_result}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Você parou cedo. Continue: {step3}. Resultado: {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "expr": [
+          "2x³ × 3x² ÷ x⁴",
+          "(4x² - 8x) ÷ 4x",
+          "x² × x³ + x⁴ × x"
+        ],
+        "result": "expressão final simplificada",
+        "step1": "primeiro passo",
+        "step2": "segundo passo",
+        "step3": "terceiro passo",
+        "wrong_step1": "resultado com primeiro passo errado",
+        "wrong_order": "resultado com ordem errada",
+        "partial_result": "resultado após dois passos"
+      },
+      "constraints": ["requer 3 propriedades em sequência", "resultado simples"]
+    },
+    "seed_examples": [
+      {
+        "params": { "expr": "2x³ × 3x² ÷ x⁴", "result": "6x", "step1": "2×3=6, x³×x²=x⁵", "step2": "6x⁵ ÷ x⁴", "step3": "6x^(5-4) = 6x", "wrong_step1": "5x⁵ (coeficientes somados)", "wrong_order": "2x³÷x⁴ primeiro = 2/x, depois ×3x² = 6x (ok por acaso)", "partial_result": "6x⁵ ÷ x⁴" },
+        "question": "Resolva passo a passo: 2x³ × 3x² ÷ x⁴",
+        "correct": "6x",
+        "distractors": ["5x⁵ ÷ x⁴", "resultado com ordem errada", "6x⁵ ÷ x⁴"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KH-sub-func-L5-write",
+    "unit_id": "KH.8",
+    "level": "L5",
+    "format": "verbal_simple",
+    "context": "mixed",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "none",
+    "transfer_condition": null,
+    "integration_pair_id": "IP.7",
+    "units_required": ["KE.16", "KC.8", "KD.14", "KG.14"],
+    "question": "{enunciado}",
+    "correct": "{result}",
+    "feedback_correct": "Identifique as sub-habilidades necessárias: {skills}. Resolva: {steps}. Resultado: {result}.",
+    "distractors": [
+      {
+        "value": "{wrong_skill}",
+        "distractor_type": "MISSING_PREREQUISITE",
+        "feedback": "Sub-habilidade incorreta aplicada. Para este problema você precisa de: {skills}. Resultado: {result}."
+      },
+      {
+        "value": "{wrong_result}",
+        "distractor_type": "MISSING_PREREQUISITE",
+        "feedback": "Erro aritmético numa sub-habilidade. Verifique: {steps}. Resultado: {result}."
+      },
+      {
+        "value": "{partial}",
+        "distractor_type": "INTEGRATION_NOT_DEVELOPED",
+        "feedback": "Você resolveu parte do problema. Continue: {steps}. Resultado: {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "enunciado": [
+          "Uma loja tem desconto de 20% em produtos com preço original de R$45. Qual é o preço final após o desconto? (Use frações para calcular.)",
+          "Em uma turma de 30 alunos, 2/5 são meninos. Quantos são meninas?",
+          "Um capital de R$200 rendeu 15% ao mês. Qual o montante após o rendimento?"
+        ],
+        "result": "resposta correta com unidade",
+        "skills": "lista de sub-habilidades envolvidas",
+        "steps": "resolução passo a passo",
+        "wrong_skill": "resultado usando sub-habilidade errada",
+        "wrong_result": "resultado com erro aritmético",
+        "partial": "resultado incompleto"
+      },
+      "constraints": ["problema requer pelo menos 3 sub-habilidades distintas", "enunciado não indica explicitamente o método"]
+    },
+    "seed_examples": [
+      {
+        "params": { "enunciado": "Em uma turma de 30 alunos, 2/5 são meninos. Quantos são meninas?", "result": "18", "skills": "fração como parte de todo, subtração de inteiros", "steps": "meninos = 2/5 × 30 = 12; meninas = 30-12 = 18", "wrong_skill": "15 (usou 1/2 em vez de 2/5)", "wrong_result": "20 (erro aritmético em 2/5×30)", "partial": "12 meninos (parou sem calcular meninas)" },
+        "question": "Em uma turma de 30 alunos, 2/5 são meninos. Quantos são meninas?",
+        "correct": "18",
+        "distractors": ["15", "20", "12"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KH-integracao-L5-seq",
+    "unit_id": "KH.9",
+    "level": "L5",
+    "format": "mixed",
+    "context": "mixed",
+    "interaction": "I6",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "none",
+    "transfer_condition": null,
+    "integration_pair_id": "IP.5",
+    "units_required": ["KC.8", "KC.13", "KD.14", "KE.8", "KG.14", "KG.15"],
+    "question": "{enunciado}",
+    "correct": "{result}",
+    "feedback_correct": "Etapa 1 ({skill1}): {step1}. Etapa 2 ({skill2}): {step2}. Etapa 3 ({skill3}): {step3}. Resultado: {result}.",
+    "distractors": [
+      {
+        "value": "{wrong_integration}",
+        "distractor_type": "INTEGRATION_NOT_DEVELOPED",
+        "feedback": "Você aplicou as sub-habilidades isoladamente sem integrá-las. {step1} → {step2} → {step3}. Resultado: {result}."
+      },
+      {
+        "value": "{local_correct_global_wrong}",
+        "distractor_type": "INTEGRATION_NOT_DEVELOPED",
+        "feedback": "Você acertou a etapa local mas perdeu o contexto global. O resultado parcial deve ser usado em: {step2}. Resultado final: {result}."
+      },
+      {
+        "value": "{arithmetic_error}",
+        "distractor_type": "MISSING_PREREQUISITE",
+        "feedback": "Erro aritmético numa das etapas. Verifique: {step1}. Prossiga: {step2}, {step3}. Resultado: {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "enunciado": [
+          "Simplifique (2³ × 3²) / (6² - 2⁴) e expresse como fração irredutível.",
+          "Calcule log₂(8) + log₃(9) - log₁₀(10).",
+          "Simplifique (x³ × x²) / x⁴ + (2x² - 4x) / (2x)."
+        ],
+        "result": "resultado final",
+        "skill1": "primeira sub-habilidade",
+        "skill2": "segunda sub-habilidade",
+        "skill3": "terceira sub-habilidade",
+        "step1": "primeiro passo",
+        "step2": "segundo passo",
+        "step3": "terceiro passo",
+        "wrong_integration": "resultado de sub-habilidades corretas mas não integradas",
+        "local_correct_global_wrong": "resultado com etapa local correta mas contexto perdido",
+        "arithmetic_error": "resultado com erro aritmético numa etapa"
+      },
+      "constraints": ["requer pelo menos 3 sub-habilidades distintas", "erro em qualquer etapa propaga para o resultado final"]
+    },
+    "seed_examples": [
+      {
+        "params": {
+          "enunciado": "Calcule log₂(8) + log₃(9) - log₁₀(10).",
+          "result": "4",
+          "skill1": "log como expoente",
+          "skill2": "log como expoente",
+          "skill3": "aritmética com inteiros",
+          "step1": "log₂(8) = 3 (pois 2³=8)",
+          "step2": "log₃(9) = 2 (pois 3²=9)",
+          "step3": "log₁₀(10) = 1; 3+2-1 = 4",
+          "wrong_integration": "log₂(8)+log₃(9) = log₆(72) = erro de propriedade",
+          "local_correct_global_wrong": "3 + 2 = 5 (esqueceu o -log₁₀(10))",
+          "arithmetic_error": "log₂(8)=4 (erro) → 4+2-1=5"
+        },
+        "question": "Calcule log₂(8) + log₃(9) - log₁₀(10).",
+        "correct": "4",
+        "distractors": ["log₆(72)", "5", "5 (erro em log₂(8))"]
+      }
+    ]
+  }
+]

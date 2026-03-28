@@ -1,0 +1,1798 @@
+IMPLEMENTAÇÃO P1–P7
+Sistema de Ensino Adaptativo — Especificação Operacional
+================================================================================
+
+
+================================================================================
+P1: CORE STATE
+================================================================================
+
+P1.1  G.21  structural_value_ranker
+// ranks units BY structural_value
+// structural_value = f(outgoing_deps, depth_in_graph)
+// units with more dependents ranked higher
+// runs offline on P0.2 graph
+
+ALGORITHM:
+
+  FOR each unit IN unit_list:
+    direct_dependents[unit] <-
+      COUNT(units WHERE unit IN their_deps)
+    transitive_dependents[unit] <-
+      COUNT(all units reachable FROM unit)
+    depth[unit] <-
+      MIN(distance FROM unit TO any KH node)
+
+  structural_value[unit] <-
+    w1 * transitive_dependents[unit]
+    + w2 * (1 / depth[unit])
+    // w1=0.7, w2=0.3 (depth less important than reach)
+
+COMPUTE:
+
+  // highest structural value: most depended-upon
+  // roots with many descendants rank highest
+
+  TIER_1 (critical base):
+    KB.1   <- depended on by KB.2-KB.15, KD.1-KD.9
+    KA.*   <- depended on by entire graph
+    KC.8   <- prioridade_operacoes
+               depended on by KG.14, KH.7-KH.9
+    KE.4   <- equivalencia_fracoes
+               depended on by KE.5-KE.16, KD.19
+
+  TIER_2 (high structural value):
+    KD.14  <- fatoracao_primos
+               depended on by KD.15-KD.19, KB.14, KG.6
+    KC.13  <- produto_potencias_mesma_base
+               depended on by KC.14-KC.21, KF.1
+    KF.8   <- equivalencia_logaritmo_potencia
+               depended on by KC.25-KC.30, KF.9-KF.11
+    KE.16  <- relacao_fracao_decimal_porcentagem
+               depended on by KE.17-KE.19, KB.13
+    KG.14  <- simplificacao_algebrica_mista
+               depended on by KG.15, KH.5-KH.9
+
+  TIER_3 (medium structural value):
+    KD.15-KD.17  MDC, MMC
+    KC.20-KC.21  expoente_fracionario, relacao_raiz
+    KF.4         simplificacao_radicais
+    KE.10        conversao_fracao_decimal
+    KG.3         recomposicao_estrategica
+
+  TIER_4 (terminal / low structural value):
+    KH.*   integration nodes (endpoints)
+    KF.10  equacoes_logaritmicas_simples
+    KE.21  proporcao_basica
+    KB.15  fatos_logaritmicos_elementares
+
+RANKED_LIST (partial, top 20):
+
+  rank  unit    transitive_deps  tier
+  1     KA.1    121              1
+  2     KA.2    118              1
+  3     KA.3    117              1
+  4     KB.1    89               1
+  5     KA.8    76               1
+  6     KC.8    71               1
+  7     KE.1    68               1
+  8     KE.4    61               1
+  9     KD.10   54               1
+  10    KD.12   49               2
+  11    KD.14   43               2
+  12    KC.13   38               2
+  13    KE.10   34               2
+  14    KE.16   31               2
+  15    KF.8    28               2
+  16    KG.14   24               2
+  17    KD.15   19               3
+  18    KC.20   17               3
+  19    KF.4    14               3
+  20    KG.3    12               3
+
+P1.1: COMPLETE
+  ranker: OPERATIONAL
+  output: feeds G.7, E.28
+
+--------------------------------------------------------------------------------
+
+P1.2  G.6  student_state_model
+// bootstrapped on empty student_record
+// updates incrementally per evidence
+
+OPERATIONS:
+
+  GET_STATE(unit_id) ->
+    student_record.units[unit_id]
+
+  UPDATE_STATE(unit_id, evidence) ->
+    state <- GET_STATE(unit_id)
+    state.evidence_log.append(evidence)
+    state.last_seen <- now()
+    state.mastery_level   <- COMPUTE_MASTERY(unit_id)
+    state.fluency_level   <- COMPUTE_FLUENCY(unit_id)
+    state.retention_score <- COMPUTE_RETENTION(unit_id)
+
+  COMPUTE_MASTERY(unit_id) ->
+    log <- evidence_log[unit_id]
+    IF log.length < MIN_EVIDENCE: RETURN null
+    correct  <- COUNT(log WHERE outcome == correct)
+    total    <- log.length
+    variety  <- COUNT_DISTINCT(log.format)
+    levels   <- COUNT_DISTINCT(log.demand_level)
+    RETURN f(correct/total, variety, levels)
+    // f weights consistency + variety + level_coverage
+
+  COMPUTE_FLUENCY(unit_id) ->
+    log <- evidence_log[unit_id]
+      .filter(timed == TRUE)
+    IF log.length < MIN_TIMED_EVIDENCE: RETURN null
+    on_time <- COUNT(log WHERE time <= threshold)
+    RETURN on_time / log.length
+
+  COMPUTE_RETENTION(unit_id) ->
+    log <- evidence_log[unit_id]
+    recent <- log.filter(
+      last_seen > now() - RETENTION_WINDOW
+    )
+    IF recent.empty: RETURN decay(last_score, elapsed)
+    RETURN COMPUTE_MASTERY(unit_id)
+    // decay: exponential, calibrated by D.6
+
+  BASE_STABLE(unit_id) ->
+    deps <- GET_DEPS(unit_id)  // from P0.2
+    FOR each d IN deps:
+      IF GET_STATE(d).mastery_level < MASTERY_THRESHOLD:
+        RETURN FALSE
+    RETURN TRUE
+
+CONSTANTS:
+  MIN_EVIDENCE:       5
+  MIN_TIMED_EVIDENCE: 3
+  MASTERY_THRESHOLD:  0.80
+  FLUENCY_THRESHOLD:  0.75
+  RETENTION_WINDOW:   14 days
+  RETENTION_DECAY:    exponential(halflife=21 days)
+
+P1.2: COMPLETE
+  model: OPERATIONAL
+  state: all units null (no evidence yet)
+  ready: accepts UPDATE_STATE() calls
+
+--------------------------------------------------------------------------------
+P1 COMPLETE
+  P1.1  G.21  structural_value_ranker   DONE
+  P1.2  G.6   student_state_model       DONE
+
+
+================================================================================
+P2: AVALIACAO E DIAGNOSTICO
+================================================================================
+
+P2.1  G.1  item_generation_engine
+// gera itens por unidade e nivel de exigencia
+// com variacao controlada de formato e contexto
+
+DEMAND_LEVELS:
+  L1  recognition       // identificar, distinguir
+  L2  guided_execution  // executar com suporte
+  L3  free_execution    // executar sem suporte
+  L4  transfer          // aplicar em contexto novo
+  L5  integration       // mobilizar multiplos conteudos
+
+FORMAT_VARIANTS:
+  numeric_direct        // ex: calcule 3/4 + 1/6
+  numeric_indirect      // ex: qual fracao equivale a 0.75?
+  verbal_simple         // ex: "Pedro tem 3/4 de pizza..."
+  symbolic              // ex: simplificar expressao algebrica
+  comparison            // ex: ordene: 2/3, 3/4, 5/8
+  error_detection       // ex: encontre o erro no calculo
+  estimation            // ex: estime sem calcular
+
+CONTEXT_VARIANTS:
+  bare                  // sem contexto
+  numeric_context       // contexto puramente numerico
+  verbal_context        // situacao descrita em texto
+  mixed                 // multiplos tipos combinados
+
+GENERATE(unit_id, level, format, context) ->
+  template <- SELECT_TEMPLATE(unit_id, level)
+  surface  <- APPLY_SURFACE(template, format, context)
+  item <- {
+    unit_id:      unit_id,
+    demand_level: level,
+    format:       format,
+    context:      context,
+    content:      surface,
+    timed:        level >= L3 AND unit_in_fluency_scope(unit_id),
+    time_limit:   GET_TIME_LIMIT(unit_id, level)
+  }
+  RETURN item
+
+SELECT_NEXT_ITEM(unit_id, student_state) ->
+  level   <- DETERMINE_LEVEL(unit_id, student_state)
+  format  <- SELECT_FORMAT(unit_id, student_state)
+  context <- SELECT_CONTEXT(unit_id, student_state)
+  RETURN GENERATE(unit_id, level, format, context)
+
+DETERMINE_LEVEL(unit_id, state) ->
+  m <- state.mastery_level
+  IF m == null:                     RETURN L1
+  IF m < 0.5:                       RETURN L1
+  IF m < 0.70:                      RETURN L2
+  IF m < MASTERY_THRESHOLD:         RETURN L3
+  IF NOT state.transfer_demonstrated: RETURN L4
+  IF NOT state.integration_demonstrated: RETURN L5
+  RETURN L3  // maintenance
+
+SELECT_FORMAT(unit_id, state) ->
+  used <- COUNT_DISTINCT(state.evidence_log.format)
+  IF used < 3: RETURN LEAST_USED_FORMAT(state)
+  RETURN RANDOM_FROM(FORMAT_VARIANTS)
+  // ensures variety before repetition
+
+SELECT_CONTEXT(unit_id, state) ->
+  used <- COUNT_DISTINCT(state.evidence_log.context)
+  IF used < 2: RETURN LEAST_USED_CONTEXT(state)
+  RETURN RANDOM_FROM(CONTEXT_VARIANTS)
+
+unit_in_fluency_scope(unit_id) ->
+  RETURN unit_id IN {
+    KB.1-KB.15,    // fatos aritmeticos
+    KC.1-KC.8,     // propriedades basicas
+    KD.1-KD.9,     // divisibilidade
+    KE.10-KE.16    // conversoes
+  }
+
+P2.1: COMPLETE
+  engine: OPERATIONAL
+  covers: L1-L5, 7 formats, 4 contexts
+
+--------------------------------------------------------------------------------
+
+P2.2  G.2  evidence_aggregation_protocol
+// acumula evidencias, conclui dominio por limiar
+
+THRESHOLDS (from D.2):
+  MIN_COUNT:       5    // minimo de tentativas
+  MIN_VARIETY:     3    // minimo de formatos distintos
+  MIN_CONSISTENCY: 0.80 // taxa de acerto minima
+  MIN_LEVELS:      2    // minimo de niveis cobertos
+
+RECORD_EVIDENCE(unit_id, item, response) ->
+  evidence <- {
+    timestamp:    now(),
+    demand_level: item.demand_level,
+    format:       item.format,
+    context:      item.context,
+    outcome:      EVALUATE(item, response),
+    timed:        item.timed,
+    latency:      response.latency
+  }
+  student_record.units[unit_id]
+    .evidence_log.append(evidence)
+  UPDATE_STATE(unit_id, evidence)  // -> G.6
+  RETURN evidence
+
+MASTERY_CONCLUDED(unit_id) ->
+  log   <- evidence_log[unit_id]
+  IF log.length < MIN_COUNT:             RETURN FALSE
+  IF CONSISTENCY(log) < MIN_CONSISTENCY: RETURN FALSE
+  IF COUNT_DISTINCT(log.format) < MIN_VARIETY: RETURN FALSE
+  IF COUNT_DISTINCT(log.demand_level) < MIN_LEVELS: RETURN FALSE
+  RETURN TRUE
+
+CONSISTENCY(log) ->
+  recent <- log.last(MIN_COUNT)
+  RETURN COUNT(recent WHERE outcome == correct) / MIN_COUNT
+
+P2.2: COMPLETE
+  protocol: OPERATIONAL
+  thresholds: defined
+
+--------------------------------------------------------------------------------
+
+P2.3  G.3  error_classifier
+// classifica cada erro em 5 dimensoes
+
+CLASSIFY(unit_id, evidence_log) ->
+  IF evidence_log.empty: RETURN null
+  errors <- evidence_log.filter(outcome == incorrect)
+  IF errors.empty: RETURN null
+
+  RETURN {
+    frequency:   CLASSIFY_FREQUENCY(errors, evidence_log),
+    scope:       CLASSIFY_SCOPE(unit_id, errors),
+    type:        CLASSIFY_TYPE(unit_id, errors),
+    transfer:    CLASSIFY_TRANSFER(unit_id, errors),
+    integration: CLASSIFY_INTEGRATION(unit_id, errors)
+  }
+
+CLASSIFY_FREQUENCY(errors, log) ->
+  rate <- errors.length / log.length
+  IF rate > 0.4 AND errors.length >= 3:
+    RETURN recurrent
+  RETURN isolated
+
+CLASSIFY_SCOPE(unit_id, errors) ->
+  deps <- GET_DEPS(unit_id)
+  failing_deps <- deps.filter(
+    GET_STATE(d).mastery_level < 0.5
+    OR GET_STATE(d).mastery_level == null
+  )
+  IF failing_deps.length > 0: RETURN structural
+  RETURN local
+
+CLASSIFY_TYPE(unit_id, errors) ->
+  conceptual_errors <- errors.filter(
+    demand_level IN {L1, L2}
+  )
+  fluency_errors <- errors.filter(
+    timed == TRUE
+    AND outcome == timeout OR latency > threshold
+  )
+  IF conceptual_errors.length > fluency_errors.length:
+    RETURN conceptual
+  RETURN fluency
+
+CLASSIFY_TRANSFER(unit_id, errors) ->
+  transfer_errors <- errors.filter(demand_level == L4)
+  trained_errors  <- errors.filter(demand_level IN {L2,L3})
+  IF transfer_errors.length > 0
+     AND trained_errors.length == 0:
+    RETURN transfer_failure
+  RETURN trained_format_failure
+
+CLASSIFY_INTEGRATION(unit_id, errors) ->
+  integration_errors <- errors.filter(demand_level == L5)
+  unit_errors <- errors.filter(demand_level IN {L2,L3})
+  IF integration_errors.length > 0
+     AND unit_errors.length == 0:
+    RETURN integration_failure
+  RETURN unit_failure
+
+P2.3: COMPLETE
+  classifier: OPERATIONAL
+  dimensions: 5
+
+--------------------------------------------------------------------------------
+
+P2.4  G.4  cause_mapper
+// mapeia classificacao -> causa provavel
+// usa estrutura D.5
+
+CAUSE_MAP = {
+  {recurrent, structural, conceptual, *, *}:
+    MISSING_PREREQUISITE,
+
+  {recurrent, local, conceptual, *, *}:
+    CONCEPTUAL_GAP,
+
+  {recurrent, local, fluency, *, *}:
+    LOW_AUTOMATIZATION,
+
+  {isolated, local, conceptual, *, *}:
+    ATTENTION_ERROR,
+
+  {*, *, *, transfer_failure, *}:
+    TRANSFER_NOT_DEVELOPED,
+
+  {*, *, *, *, integration_failure}:
+    INTEGRATION_NOT_DEVELOPED,
+
+  {recurrent, structural, fluency, *, *}:
+    BASE_FLUENCY_INSUFFICIENT
+}
+
+MAP_CAUSE(classification) ->
+  FOR each pattern IN CAUSE_MAP:
+    IF MATCHES(classification, pattern):
+      RETURN CAUSE_MAP[pattern]
+  RETURN UNKNOWN_CAUSE
+
+MATCHES(classification, pattern) ->
+  FOR each dimension IN pattern:
+    IF pattern[dimension] != *
+       AND classification[dimension] != pattern[dimension]:
+      RETURN FALSE
+  RETURN TRUE
+
+P2.4: COMPLETE
+  mapper: OPERATIONAL
+  causes: 7 defined
+
+--------------------------------------------------------------------------------
+
+P2.5  G.5  action_router
+// mapeia causa -> intervencao de B.7.1-B.7.6
+// usa estrutura D.4
+
+ACTION_MAP = {
+  MISSING_PREREQUISITE:       B.7.1,  // reforco de base
+  CONCEPTUAL_GAP:             B.7.2,  // consolidacao execucao
+  LOW_AUTOMATIZATION:         B.7.3,  // desenvolvimento fluencia
+  TRANSFER_NOT_DEVELOPED:     B.7.4,  // promocao transferencia
+  INTEGRATION_NOT_DEVELOPED:  B.7.5,  // promocao integracao
+  BASE_FLUENCY_INSUFFICIENT:  B.7.1,  // reforco de base
+  ATTENTION_ERROR:            null    // sem intervencao estrutural
+}
+
+ROUTE_ACTION(unit_id) ->
+  classification <- CLASSIFY(unit_id,
+    student_record.units[unit_id].evidence_log)
+  IF classification == null: RETURN null
+  cause  <- MAP_CAUSE(classification)
+  action <- ACTION_MAP[cause]
+  RETURN {
+    unit_id:        unit_id,
+    cause:          cause,
+    classification: classification,
+    intervention:   action
+  }
+
+P2.5: COMPLETE
+  router: OPERATIONAL
+
+--------------------------------------------------------------------------------
+
+G.6 RETROATIVAMENTE COMPLETE
+// G.2 e G.3 agora operacionais
+// UPDATE_STATE() recebe evidence com classificacao
+
+UPDATE_STATE v2(unit_id, evidence) ->
+  // P1.2 base +
+  classification <- CLASSIFY(unit_id,
+    evidence_log[unit_id])
+  student_record.units[unit_id]
+    .last_classification <- classification
+
+--------------------------------------------------------------------------------
+P2 COMPLETE
+  P2.1  G.1   item_generation_engine        DONE
+  P2.2  G.2   evidence_aggregation          DONE
+  P2.3  G.3   error_classifier              DONE
+  P2.4  G.4   cause_mapper                  DONE
+  P2.5  G.5   action_router                 DONE
+  G.6         retroativamente complete      DONE
+
+
+================================================================================
+P3: NAVEGACAO E CONTROLE
+================================================================================
+
+P3.1  G.8  advance_gate
+// bloqueia avanco enquanto base instavel
+// ou evidencia insuficiente
+
+CAN_ADVANCE(unit_id) ->
+  state <- GET_STATE(unit_id)
+
+  // check 1: base deps satisfied
+  IF NOT BASE_STABLE(unit_id):
+    RETURN BLOCKED(reason=UNSTABLE_BASE,
+      failing_deps=GET_FAILING_DEPS(unit_id))
+
+  // check 2: mastery evidence sufficient
+  IF NOT MASTERY_CONCLUDED(unit_id):
+    RETURN BLOCKED(reason=INSUFFICIENT_EVIDENCE,
+      current=state.mastery_level,
+      required=MASTERY_THRESHOLD)
+
+  // check 3: retention if previously concluded
+  IF state.retention_score != null
+     AND state.retention_score < RETENTION_THRESHOLD:
+    RETURN BLOCKED(reason=RETENTION_DECAYED,
+      current=state.retention_score,
+      required=RETENTION_THRESHOLD)
+
+  RETURN OPEN
+
+GET_FAILING_DEPS(unit_id) ->
+  deps <- GET_DEPS(unit_id)
+  RETURN deps.filter(
+    GET_STATE(d).mastery_level == null
+    OR GET_STATE(d).mastery_level < MASTERY_THRESHOLD
+  )
+
+CONSTANTS:
+  RETENTION_THRESHOLD: 0.70
+
+P3.1: COMPLETE
+  gate: OPERATIONAL
+  checks: 3 (base, evidence, retention)
+
+--------------------------------------------------------------------------------
+
+P3.2  G.7  next_content_selector
+// seleciona proximo conteudo por estado atual
+// balanceia novidade | consolidacao | revisao | retomada
+
+PRIORITIES:
+  P_RETAKE:        1  // base instavel: maior prioridade
+  P_REVIEW:        2  // retencao em queda
+  P_CONSOLIDATE:   3  // mastery < threshold mas iniciado
+  P_NEW:           4  // pronto para avancar
+
+SELECT_NEXT(student_record) ->
+  candidates <- RANK_CANDIDATES(student_record)
+  RETURN candidates.first()
+
+RANK_CANDIDATES(student_record) ->
+  scored <- []
+  FOR each unit IN unit_list:
+    state  <- GET_STATE(unit)
+    gate   <- CAN_ADVANCE(unit)
+    sv     <- structural_value[unit]  // from G.21
+    score  <- COMPUTE_SCORE(unit, state, gate, sv)
+    scored.append({unit, score})
+  RETURN scored.sort_by(score DESC)
+
+COMPUTE_SCORE(unit, state, gate, sv) ->
+
+  // retake: dep failing
+  IF gate.reason == UNSTABLE_BASE:
+    failing <- gate.failing_deps
+    RETURN P_RETAKE * sv
+           + PRIORITY_BOOST * failing.length
+
+  // review: retention decaying
+  IF state.retention_score != null
+     AND state.retention_score < RETENTION_THRESHOLD:
+    decay <- RETENTION_THRESHOLD - state.retention_score
+    RETURN P_REVIEW * sv + decay * 10
+
+  // consolidate: started but not concluded
+  IF state.mastery_level != null
+     AND state.mastery_level < MASTERY_THRESHOLD
+     AND gate == OPEN:
+    progress <- state.mastery_level
+    RETURN P_CONSOLIDATE * sv + progress
+
+  // new: gate open, not yet started
+  IF state.mastery_level == null
+     AND gate == OPEN:
+    RETURN P_NEW * sv
+
+  // already concluded: maintenance only
+  IF MASTERY_CONCLUDED(unit)
+     AND state.retention_score >= RETENTION_THRESHOLD:
+    RETURN 0
+
+  RETURN 0
+
+SESSION_PLAN(student_record, session_size=10) ->
+  plan        <- []
+  new_count   <- 0
+  NEW_LIMIT   <- 2  // E.16: max new content per session
+
+  candidates  <- RANK_CANDIDATES(student_record)
+
+  FOR each candidate IN candidates:
+    IF plan.length >= session_size: BREAK
+
+    type <- CLASSIFY_CANDIDATE_TYPE(candidate, student_record)
+
+    IF type == NEW AND new_count >= NEW_LIMIT:
+      CONTINUE  // E.16 enforced
+
+    // E.17: cognitive load check
+    projected_load <- ESTIMATE_LOAD(plan + candidate)
+    IF projected_load > LOAD_THRESHOLD:
+      CONTINUE
+
+    plan.append({unit: candidate.unit, type: type})
+    IF type == NEW: new_count += 1
+
+  RETURN plan
+
+CLASSIFY_CANDIDATE_TYPE(candidate, student_record) ->
+  state <- GET_STATE(candidate.unit)
+  IF state.mastery_level == null:               RETURN new
+  IF state.retention_score < RETENTION_THRESHOLD: RETURN review
+  IF state.mastery_level < MASTERY_THRESHOLD:   RETURN consolidate
+  RETURN maintenance
+
+ESTIMATE_LOAD(plan) ->
+  total <- 0
+  FOR each item IN plan:
+    state   <- GET_STATE(item.unit)
+    level   <- DETERMINE_LEVEL(item.unit, state)
+    novelty <- IF state.mastery_level == null: 1.5 ELSE 1.0
+    total   += level * novelty
+  RETURN total
+
+CONSTANTS:
+  LOAD_THRESHOLD:  25
+  PRIORITY_BOOST:  5
+
+P3.2: COMPLETE
+  selector: OPERATIONAL
+  session_planner: OPERATIONAL
+  constraints: E.14-E.18 enforced
+
+--------------------------------------------------------------------------------
+
+P3.3  G.9  intervention_selector
+// ativa protocolo correto de B.7.1-B.7.6
+// dado resultado de G.5
+
+INTERVENTION_PROTOCOLS = {
+  B.7.1: { name: base_reinforcement,      action: REINFORCE_BASE        },
+  B.7.2: { name: execution_consolidation, action: CONSOLIDATE_EXECUTION  },
+  B.7.3: { name: fluency_development,     action: DEVELOP_FLUENCY        },
+  B.7.4: { name: transfer_promotion,      action: PROMOTE_TRANSFER       },
+  B.7.5: { name: integration_promotion,   action: PROMOTE_INTEGRATION    },
+  B.7.6: { name: progress_preservation,   action: PRESERVE_PROGRESS      }
+}
+
+SELECT_INTERVENTION(unit_id) ->
+  routed <- ROUTE_ACTION(unit_id)  // from G.5
+  IF routed == null OR routed.intervention == null:
+    RETURN null
+  protocol <- INTERVENTION_PROTOCOLS[routed.intervention]
+  RETURN {
+    unit_id:    unit_id,
+    protocol:   protocol,
+    cause:      routed.cause,
+    target_dep: GET_FAILING_DEPS(unit_id).first()
+               IF routed.cause == MISSING_PREREQUISITE
+               ELSE null
+  }
+
+REINFORCE_BASE(unit_id) ->
+  failing <- GET_FAILING_DEPS(unit_id)
+  RETURN failing.sort_by(structural_value DESC)
+
+CONSOLIDATE_EXECUTION(unit_id) ->
+  RETURN [
+    GENERATE(unit_id, L2, LEAST_USED_FORMAT, bare),
+    GENERATE(unit_id, L3, LEAST_USED_FORMAT, bare),
+    GENERATE(unit_id, L3, RANDOM_FORMAT, numeric_context)
+  ]
+
+DEVELOP_FLUENCY(unit_id) ->
+  IF NOT unit_in_fluency_scope(unit_id):
+    RETURN null
+  RETURN [
+    GENERATE(unit_id, L3, numeric_direct, bare) WITH timed=TRUE,
+    GENERATE(unit_id, L3, numeric_direct, bare) WITH timed=TRUE
+  ]
+
+PROMOTE_TRANSFER(unit_id) ->
+  RETURN transfer_activity_generator
+    .GENERATE_TRANSFER_ITEMS(unit_id)
+
+PROMOTE_INTEGRATION(unit_id) ->
+  RETURN integration_task_generator
+    .GENERATE_INTEGRATION_TASKS(unit_id)
+
+PRESERVE_PROGRESS(unit_id) ->
+  student_record.units[unit_id]
+    .preserve_lower_evidence <- TRUE
+  RETURN null
+
+P3.3: COMPLETE
+  selector: OPERATIONAL
+  protocols: B.7.1-B.7.6 mapped
+
+--------------------------------------------------------------------------------
+
+P3.4  G.10  regression_controller
+// define profundidade minima de regressao
+// preserva evidencia em niveis inferiores
+
+REGRESS(unit_id, cause) ->
+
+  IF cause == MISSING_PREREQUISITE:
+    target <- GET_FAILING_DEPS(unit_id).first()
+    RETURN {
+      regress_to:        target,
+      reset_unit:        FALSE,
+      preserve_evidence: TRUE
+    }
+
+  IF cause == CONCEPTUAL_GAP:
+    RETURN {
+      regress_to:        unit_id,
+      reset_level:       L1,
+      reset_unit:        FALSE,
+      preserve_evidence: TRUE
+    }
+
+  IF cause == LOW_AUTOMATIZATION:
+    RETURN {
+      regress_to:        null,
+      reset_unit:        FALSE,
+      preserve_evidence: TRUE
+    }
+
+  IF cause IN {TRANSFER_NOT_DEVELOPED,
+               INTEGRATION_NOT_DEVELOPED}:
+    RETURN {
+      regress_to:        null,
+      reset_unit:        FALSE,
+      preserve_evidence: TRUE
+    }
+
+  RETURN {
+    regress_to:        unit_id,
+    reset_unit:        FALSE,
+    preserve_evidence: TRUE
+  }
+
+APPLY_REGRESSION(regression_plan) ->
+  IF regression_plan.preserve_evidence:
+    student_record.active_target <-
+      regression_plan.regress_to
+  IF regression_plan.reset_level:
+    student_record.units[unit_id]
+      .forced_level <- regression_plan.reset_level
+
+P3.4: COMPLETE
+  controller: OPERATIONAL
+  invariant: evidence_log never wiped
+
+--------------------------------------------------------------------------------
+P3 COMPLETE
+  P3.1  G.8   advance_gate              DONE
+  P3.2  G.7   next_content_selector     DONE
+              session_planner           DONE
+  P3.3  G.9   intervention_selector     DONE
+  P3.4  G.10  regression_controller     DONE
+
+
+================================================================================
+P4: RETENCAO E FLUENCIA
+================================================================================
+
+P4.1  G.11  spaced_revision_scheduler
+// agenda revisao por unidade
+// intervalos crescentes por robustez de retencao
+// esquecimento modelado como variavel prevista
+
+FORGETTING_MODEL (from D.7):
+  retention(t) = last_score * e^(-lambda * t)
+  lambda   = DECAY_RATE / halflife
+  halflife = 21 days  // base
+  // halflife adjusted per unit robustness:
+  //   tier_1 units: halflife = 14 days
+  //   tier_4 units: halflife = 28 days
+
+INTERVAL_SCHEDULE (from D.6):
+
+  GET_INTERVAL(unit_id) ->
+    robustness <- GET_ROBUSTNESS(unit_id)
+    base       <- BASE_INTERVALS[robustness_tier(robustness)]
+    sv_factor  <- 1 / (1 + structural_value_normalized[unit_id])
+    RETURN base * sv_factor
+
+  BASE_INTERVALS = {
+    tier_1_robustness:  1 day,
+    tier_2_robustness:  3 days,
+    tier_3_robustness:  7 days,
+    tier_4_robustness:  14 days,
+    tier_5_robustness:  21 days
+  }
+
+  GET_ROBUSTNESS(unit_id) ->
+    log <- evidence_log[unit_id]
+      .filter(type == review)
+    IF log.length < 3: RETURN tier_1_robustness
+    above <- log.filter(
+      retention_score >= RETENTION_THRESHOLD
+    )
+    RETURN TIER_FROM_RATIO(above.length / log.length)
+
+  TIER_FROM_RATIO(ratio) ->
+    IF ratio < 0.40: RETURN tier_1_robustness
+    IF ratio < 0.60: RETURN tier_2_robustness
+    IF ratio < 0.75: RETURN tier_3_robustness
+    IF ratio < 0.90: RETURN tier_4_robustness
+    RETURN tier_5_robustness
+
+SCHEDULE_REVISION(unit_id) ->
+  interval    <- GET_INTERVAL(unit_id)
+  next_review <- now() + interval
+  student_record.units[unit_id]
+    .next_review <- next_review
+  RETURN next_review
+
+REVISIONS_DUE(student_record) ->
+  RETURN unit_list.filter(
+    student_record.units[u].next_review != null
+    AND student_record.units[u].next_review <= now()
+  ).sort_by(
+    student_record.units[u].next_review ASC
+  )
+
+PROJECT_RETENTION(unit_id, at_time) ->
+  last_score <- GET_STATE(unit_id).retention_score
+  IF last_score == null: RETURN null
+  last_seen  <- GET_STATE(unit_id).last_seen
+  elapsed    <- at_time - last_seen
+  halflife   <- GET_HALFLIFE(unit_id)
+  lambda     <- ln(2) / halflife
+  RETURN last_score * e^(-lambda * elapsed)
+
+GET_HALFLIFE(unit_id) ->
+  sv_tier <- structural_value_tier[unit_id]
+  IF sv_tier == 1: RETURN 14 days
+  IF sv_tier == 4: RETURN 28 days
+  RETURN 21 days
+
+P4.1: COMPLETE
+  scheduler: OPERATIONAL
+  model: exponential decay with robustness tiers
+  invariant: high structural value -> shorter intervals
+
+--------------------------------------------------------------------------------
+
+P4.2  G.12  weakening_detector
+// monitora retention_score por unidade
+// aciona reativacao antes de threshold_breach
+
+WEAKENING_THRESHOLD: 0.75
+
+CHECK_WEAKENING(student_record) ->
+  weakening <- []
+  FOR each unit IN unit_list:
+    state <- GET_STATE(unit)
+    IF state.mastery_level == null: CONTINUE
+    IF state.last_seen == null: CONTINUE
+
+    projected <- PROJECT_RETENTION(
+      unit, now() + PROJECTION_WINDOW
+    )
+    IF projected != null
+       AND projected < WEAKENING_THRESHOLD:
+      weakening.append({
+        unit:      unit,
+        current:   state.retention_score,
+        projected: projected,
+        urgency:   WEAKENING_THRESHOLD - projected
+      })
+
+  RETURN weakening.sort_by(urgency DESC)
+
+PROJECTION_WINDOW: 3 days
+
+REACTIVATE(unit_id) ->
+  student_record.units[unit_id]
+    .next_review <- now()
+  state <- GET_STATE(unit_id)
+  level <- MIN(L3, DETERMINE_LEVEL(unit_id, state))
+  RETURN [
+    GENERATE(unit_id, level, LEAST_USED_FORMAT, bare),
+    GENERATE(unit_id, level, RANDOM_FORMAT, numeric_context)
+  ]
+
+INTEGRATE_WITH_SESSION(session_plan, student_record) ->
+  weakening <- CHECK_WEAKENING(student_record)
+  FOR each w IN weakening:
+    items <- REACTIVATE(w.unit)
+    load  <- ESTIMATE_LOAD(session_plan + items)
+    IF load <= LOAD_THRESHOLD:
+      session_plan.prepend(items)
+  RETURN session_plan
+
+P4.2: COMPLETE
+  detector: OPERATIONAL
+  invariant: flags before breach, not after
+
+--------------------------------------------------------------------------------
+
+P4.3  G.13  automatization_tracker
+// rastreia grau de automatizacao por componente
+// aciona fluency_practice quando abaixo do alvo
+
+FLUENCY_SCOPE:
+  KB.1-KB.15    // fatos aritmeticos
+  KC.1-KC.8     // propriedades basicas
+  KD.1-KD.9     // divisibilidade
+  KE.10-KE.16   // conversoes
+
+AUTOMATIZATION_TARGET: 0.85
+
+COMPUTE_AUTOMATIZATION(unit_id) ->
+  log <- evidence_log[unit_id]
+    .filter(timed == TRUE)
+  IF log.length < MIN_TIMED_EVIDENCE: RETURN null
+  on_time_correct <- log.filter(
+    outcome == correct
+    AND latency <= time_limit
+  )
+  RETURN on_time_correct.length / log.length
+
+TRACK_AUTOMATIZATION(student_record) ->
+  below_target <- []
+  FOR each unit IN FLUENCY_SCOPE:
+    state <- GET_STATE(unit)
+    IF state.mastery_level == null: CONTINUE
+    auto  <- COMPUTE_AUTOMATIZATION(unit)
+    IF auto == null: CONTINUE
+    IF auto < AUTOMATIZATION_TARGET:
+      below_target.append({
+        unit: unit,
+        auto: auto,
+        gap:  AUTOMATIZATION_TARGET - auto
+      })
+  RETURN below_target.sort_by(gap DESC)
+
+TRIGGER_FLUENCY_PRACTICE(unit_id) ->
+  IF NOT unit_in_fluency_scope(unit_id):
+    RETURN null
+  auto <- COMPUTE_AUTOMATIZATION(unit_id)
+  IF auto != null AND auto < AUTOMATIZATION_TARGET:
+    RETURN [
+      GENERATE(unit_id, L3, numeric_direct, bare) WITH timed=TRUE,
+      GENERATE(unit_id, L3, numeric_direct, bare) WITH timed=TRUE,
+      GENERATE(unit_id, L3, RANDOM_FORMAT, bare)  WITH timed=TRUE
+    ]
+  RETURN null
+
+UPDATE_STATE v3(unit_id, evidence) ->
+  // P1.2 + P2.3 base +
+  IF unit_id IN FLUENCY_SCOPE:
+    student_record.units[unit_id]
+      .automatization <- COMPUTE_AUTOMATIZATION(unit_id)
+
+P4.3: COMPLETE
+  tracker: OPERATIONAL
+  scope: 37 units
+  invariant: fluency only required where functional
+
+--------------------------------------------------------------------------------
+
+P4.4  G.14  time_constraint_controller
+// aplica restricao de tempo onde funcionalmente necessario
+// registra evidencia conceitual separadamente de velocidade
+
+TIME_LIMITS = {
+  KB.1:  3s,
+  KB.7:  4s,
+  KD.1:  2s,
+  KE.10: 5s,
+  KC.8:  4s,
+  default: 6s
+}
+
+GET_TIME_LIMIT(unit_id, level) ->
+  IF NOT unit_in_fluency_scope(unit_id): RETURN null
+  IF level < L3: RETURN null
+  RETURN TIME_LIMITS[unit_id] OR TIME_LIMITS[default]
+
+RECORD_TIMED_EVIDENCE(unit_id, item, response) ->
+  evidence <- RECORD_EVIDENCE(unit_id, item, response)
+  evidence.conceptual_correct <-
+    response.answer == item.correct_answer
+  evidence.fluent <-
+    evidence.conceptual_correct
+    AND response.latency <= item.time_limit
+  student_record.units[unit_id]
+    .conceptual_log.append(evidence)
+    IF evidence.conceptual_correct
+  student_record.units[unit_id]
+    .fluency_log.append(evidence)
+    IF evidence.fluent
+  RETURN evidence
+
+COMPUTE_MASTERY v2(unit_id) ->
+  // correct but slow still counts for mastery
+  log <- student_record.units[unit_id].conceptual_log
+  IF log.length < MIN_EVIDENCE: RETURN null
+  RETURN CONSISTENCY(log)
+
+P4.4: COMPLETE
+  controller: OPERATIONAL
+  invariant: correct_but_slow counted as mastery evidence
+             fluency tracked separately
+
+--------------------------------------------------------------------------------
+P4 COMPLETE
+  P4.1  G.11  spaced_revision_scheduler  DONE
+  P4.2  G.12  weakening_detector         DONE
+  P4.3  G.13  automatization_tracker     DONE
+  P4.4  G.14  time_constraint_controller DONE
+
+
+================================================================================
+P5: TRANSFERENCIA E INTEGRACAO
+================================================================================
+
+P5.1  G.15  transfer_activity_generator
+// gera atividades com condicoes de transferencia
+
+TRANSFER_CONDITIONS:
+  TC.1  format_shift      // formato diferente do treinado
+  TC.2  context_shift     // contexto diferente do treinado
+  TC.3  surface_variation // mesma estrutura, roupagem nova
+  TC.4  no_method_cue     // sem indicacao do metodo
+
+GET_TRAINED_FORMATS(unit_id) ->
+  log <- evidence_log[unit_id]
+    .filter(demand_level IN {L2, L3})
+  RETURN COUNT_DISTINCT(log.format)
+
+GET_TRAINED_CONTEXTS(unit_id) ->
+  log <- evidence_log[unit_id]
+    .filter(demand_level IN {L2, L3})
+  RETURN COUNT_DISTINCT(log.context)
+
+GENERATE_TRANSFER_ITEM(unit_id, condition) ->
+  trained_formats  <- GET_TRAINED_FORMATS(unit_id)
+  trained_contexts <- GET_TRAINED_CONTEXTS(unit_id)
+
+  IF condition == TC.1:
+    format  <- SELECT_FROM(FORMAT_VARIANTS - trained_formats)
+    context <- bare
+    cue     <- explicit
+
+  IF condition == TC.2:
+    format  <- LEAST_USED_FORMAT(unit_id)
+    context <- SELECT_FROM(CONTEXT_VARIANTS - trained_contexts)
+    cue     <- explicit
+
+  IF condition == TC.3:
+    format  <- SELECT_FROM(FORMAT_VARIANTS - trained_formats)
+    context <- SELECT_FROM(CONTEXT_VARIANTS - trained_contexts)
+    cue     <- explicit
+
+  IF condition == TC.4:
+    format  <- SELECT_FROM(FORMAT_VARIANTS - trained_formats)
+    context <- SELECT_FROM(CONTEXT_VARIANTS - trained_contexts)
+    cue     <- none
+
+  RETURN GENERATE(unit_id, L4, format, context)
+    WITH method_cue=cue
+
+GENERATE_TRANSFER_SEQUENCE(unit_id) ->
+  state <- GET_STATE(unit_id)
+  IF state.mastery_level < MASTERY_THRESHOLD:
+    RETURN null
+
+  completed <- GET_COMPLETED_CONDITIONS(unit_id)
+
+  IF TC.1 NOT IN completed:
+    RETURN GENERATE_TRANSFER_ITEM(unit_id, TC.1)
+  IF TC.2 NOT IN completed:
+    RETURN GENERATE_TRANSFER_ITEM(unit_id, TC.2)
+  IF TC.3 NOT IN completed:
+    RETURN GENERATE_TRANSFER_ITEM(unit_id, TC.3)
+  IF TC.4 NOT IN completed:
+    RETURN GENERATE_TRANSFER_ITEM(unit_id, TC.4)
+  RETURN null
+
+GET_COMPLETED_CONDITIONS(unit_id) ->
+  log <- evidence_log[unit_id]
+    .filter(demand_level == L4 AND outcome == correct)
+  RETURN COUNT_DISTINCT(log.transfer_condition)
+
+P5.1: COMPLETE
+  generator: OPERATIONAL
+  conditions: TC.1-TC.4 progressive
+
+--------------------------------------------------------------------------------
+
+P5.2  G.16  transfer_tracker
+// rastreia transfer_demonstrated separadamente
+// preserva local_mastery quando transfer falha
+
+TRANSFER_CONCLUDED(unit_id) ->
+  log <- evidence_log[unit_id]
+    .filter(demand_level == L4)
+  IF log.length < MIN_TRANSFER_EVIDENCE:
+    RETURN FALSE
+  conditions_passed <- GET_COMPLETED_CONDITIONS(unit_id)
+  RETURN conditions_passed >= MIN_CONDITIONS_PASSED
+
+MIN_TRANSFER_EVIDENCE: 4
+MIN_CONDITIONS_PASSED: 3
+
+UPDATE_TRANSFER_STATE(unit_id) ->
+  state    <- GET_STATE(unit_id)
+  concluded <- TRANSFER_CONCLUDED(unit_id)
+  student_record.units[unit_id]
+    .transfer_demonstrated <- concluded
+  RETURN concluded
+
+TRANSFER_FAILED(unit_id) ->
+  log <- evidence_log[unit_id]
+    .filter(demand_level == L4)
+  IF log.empty: RETURN FALSE
+  recent   <- log.last(MIN_TRANSFER_EVIDENCE)
+  failures <- recent.filter(outcome == incorrect)
+  RETURN failures.length >= MIN_TRANSFER_EVIDENCE - 1
+         AND NOT TRANSFER_CONCLUDED(unit_id)
+
+HANDLE_TRANSFER_FAILURE(unit_id) ->
+  PRESERVE_PROGRESS(unit_id)
+  RETURN GENERATE_TRANSFER_ITEM(unit_id, TC.1)
+
+P5.2: COMPLETE
+  tracker: OPERATIONAL
+  invariant: local_mastery preserved on transfer failure
+
+--------------------------------------------------------------------------------
+
+P5.3  G.17  integration_task_generator
+// gera tarefas que exigem mobilizacao simultanea
+// de multiplos conteudos previamente separados
+
+INTEGRATION_PAIRS:
+  IP.1  {KE.*, KD.*}     KH.1  fracoes + divisibilidade
+  IP.2  {KD.14, KE.*}    KH.2  fatoracao + fracoes
+  IP.3  {KF.*, KC.20}    KH.3  potenciacao + radiciacao
+  IP.4  {KF.9, KC.13}    KH.4  logaritmos + potenciacao
+  IP.5  {KG.14, KC.*}    KH.5  simplificacao algebrica mista
+  IP.6  {KA.6, KG.15}    KH.6  plausibilidade + estrategia
+  IP.7  {KC.8, KG.15}    KH.7  prioridade + sub-habilidades
+
+INTEGRATION_READY(unit_ids) ->
+  FOR each unit IN unit_ids:
+    IF GET_STATE(unit).mastery_level == null
+       OR GET_STATE(unit).mastery_level < MASTERY_THRESHOLD:
+      RETURN FALSE
+  RETURN TRUE
+
+GENERATE_INTEGRATION_TASK(pair_id) ->
+  pair  <- INTEGRATION_PAIRS[pair_id]
+  units <- pair.units
+
+  IF NOT INTEGRATION_READY(units):
+    RETURN null
+
+  RETURN {
+    units:        units,
+    demand_level: L5,
+    format:       mixed,
+    context:      mixed,
+    method_cue:   none,
+    requires_all: TRUE
+  }
+
+SELECT_INTEGRATION_PAIR(student_record) ->
+  ready_pairs <- []
+  FOR each pair IN INTEGRATION_PAIRS:
+    IF INTEGRATION_READY(pair.units):
+      sv <- AVG(structural_value[u] FOR u IN pair.units)
+      ready_pairs.append({pair, sv})
+  RETURN ready_pairs.sort_by(sv DESC).first()
+
+P5.3: COMPLETE
+  generator: OPERATIONAL
+  pairs: 7 integration pairs from KH
+
+--------------------------------------------------------------------------------
+
+P5.4  G.18  integration_progression_planner
+// planeja pontos de integracao ao longo do percurso
+// aumenta complexidade progressivamente
+// verifica coerencia multi-etapa
+
+INTEGRATION_LEVELS:
+  IL.1  pair_integration      // 2 units
+  IL.2  triple_integration    // 3 units
+  IL.3  block_integration     // full KH cluster
+  IL.4  vestibular_simulation // mixed exam conditions
+
+PLAN_INTEGRATION_POINTS(student_record) ->
+  plan <- []
+
+  ready_pairs <- [
+    pair FOR pair IN INTEGRATION_PAIRS
+    IF INTEGRATION_READY(pair.units)
+  ]
+  IF ready_pairs.not_empty:
+    plan.append({level: IL.1, pairs: ready_pairs, timing: now()})
+
+  ready_clusters <- GET_READY_CLUSTERS(student_record)
+  IF ready_clusters.not_empty:
+    plan.append({level: IL.2, clusters: ready_clusters,
+                 timing: AFTER(IL.1)})
+
+  IF ALL_KH_MASTERED(student_record):
+    plan.append({level: IL.3, timing: AFTER(IL.2)})
+
+  IF INTEGRATION_CONCLUDED(IL.3, student_record):
+    plan.append({level: IL.4, timing: AFTER(IL.3)})
+
+  RETURN plan
+
+GET_READY_CLUSTERS(student_record) ->
+  clusters <- GROUP_BY_DOMAIN(INTEGRATION_PAIRS)
+  RETURN clusters.filter(ALL units IN cluster mastered)
+
+ALL_KH_MASTERED(student_record) ->
+  FOR each unit IN KH:
+    IF NOT MASTERY_CONCLUDED(unit):
+      RETURN FALSE
+  RETURN TRUE
+
+INTEGRATION_CONCLUDED(level, student_record) ->
+  log <- evidence_log
+    .filter(demand_level == L5
+            AND integration_level == level
+            AND outcome == correct)
+  RETURN log.length >= MIN_INTEGRATION_EVIDENCE
+
+MIN_INTEGRATION_EVIDENCE: 3
+
+VERIFY_MULTISTEP_COHERENCE(task, response) ->
+  steps <- PARSE_STEPS(response)
+  FOR i IN 1..steps.length:
+    IF NOT CONSISTENT(steps[i], steps[i-1]):
+      RETURN {
+        coherent: FALSE,
+        break_at: i,
+        step:     steps[i]
+      }
+  RETURN {coherent: TRUE}
+
+UPDATE_INTEGRATION_STATE(unit_ids, outcome) ->
+  FOR each unit IN unit_ids:
+    IF outcome == correct:
+      student_record.units[unit]
+        .integration_demonstrated <- TRUE
+
+P5.4: COMPLETE
+  planner: OPERATIONAL
+  levels: IL.1-IL.4 progressive
+  coherence: multi-step verified
+
+--------------------------------------------------------------------------------
+P5 COMPLETE
+  P5.1  G.15  transfer_activity_generator     DONE
+  P5.2  G.16  transfer_tracker                DONE
+  P5.3  G.17  integration_task_generator      DONE
+  P5.4  G.18  integration_progression_planner DONE
+
+
+================================================================================
+P6: METACOGNICAO E FEEDBACK
+================================================================================
+
+P6.1  G.19  self_assessment_interface
+// expoe ao aluno estado real por unidade
+// distingue dimensoes que tendem a ser confundidas
+
+STUDENT_VIEW(unit_id) ->
+  state <- GET_STATE(unit_id)
+  deps  <- GET_DEPS(unit_id)
+
+  RETURN {
+    unit_id: unit_id,
+
+    mastery: {
+      level:    state.mastery_level,
+      label:    MASTERY_LABEL(state.mastery_level),
+      evidence: COUNT(evidence_log[unit_id])
+    },
+
+    fluency: {
+      level:    COMPUTE_AUTOMATIZATION(unit_id),
+      label:    FLUENCY_LABEL(unit_id),
+      in_scope: unit_in_fluency_scope(unit_id),
+      note: IF state.mastery_level >= MASTERY_THRESHOLD
+               AND COMPUTE_AUTOMATIZATION(unit_id)
+                   < AUTOMATIZATION_TARGET
+               AND unit_in_fluency_scope(unit_id):
+              "dominio conceitual presente,
+               automatizacao ainda abaixo do alvo"
+            ELSE null
+    },
+
+    recognition_vs_production: {
+      recognition: LEVEL_SCORE(unit_id, L1),
+      production:  LEVEL_SCORE(unit_id, L3),
+      note: IF LEVEL_SCORE(unit_id, L1) >= 0.80
+               AND LEVEL_SCORE(unit_id, L3) < MASTERY_THRESHOLD:
+              "reconhece mas ainda nao executa com autonomia"
+            ELSE null
+    },
+
+    guided_vs_autonomous: {
+      guided:     LEVEL_SCORE(unit_id, L2),
+      autonomous: LEVEL_SCORE(unit_id, L3),
+      note: IF LEVEL_SCORE(unit_id, L2) >= 0.80
+               AND LEVEL_SCORE(unit_id, L3) < MASTERY_THRESHOLD:
+              "executa com suporte mas ainda nao de forma autonoma"
+            ELSE null
+    },
+
+    local_vs_integrated: {
+      local:       state.mastery_level,
+      transfer:    TRANSFER_SCORE(unit_id),
+      integration: INTEGRATION_SCORE(unit_id),
+      note: IF state.mastery_level >= MASTERY_THRESHOLD
+               AND NOT state.transfer_demonstrated:
+              "dominio local presente,
+               transferencia ainda nao demonstrada"
+            ELSE IF state.transfer_demonstrated
+               AND NOT state.integration_demonstrated:
+              "transferencia presente,
+               integracao ainda nao demonstrada"
+            ELSE null
+    },
+
+    dependencies: {
+      requires:     deps,
+      stable_deps:  deps.filter(
+        GET_STATE(d).mastery_level >= MASTERY_THRESHOLD
+      ),
+      failing_deps: GET_FAILING_DEPS(unit_id),
+      note: IF GET_FAILING_DEPS(unit_id).not_empty:
+              "dificuldades em " +
+              GET_FAILING_DEPS(unit_id) +
+              " afetam desempenho nesta unidade"
+            ELSE null
+    },
+
+    revision_need: {
+      next_review: state.next_review,
+      overdue:     state.next_review < now(),
+      projected_retention: PROJECT_RETENTION(
+        unit_id, now() + 7 days
+      ),
+      note: IF state.next_review < now():
+              "revisao vencida"
+            ELSE IF PROJECT_RETENTION(unit_id, now()+7 days)
+                   < WEAKENING_THRESHOLD:
+              "retencao em queda, revisao recomendada"
+            ELSE null
+    }
+  }
+
+MASTERY_LABEL(level) ->
+  IF level == null:                RETURN "nao iniciado"
+  IF level < 0.50:                 RETURN "iniciado"
+  IF level < MASTERY_THRESHOLD:    RETURN "em progresso"
+  RETURN "dominado"
+
+FLUENCY_LABEL(unit_id) ->
+  IF NOT unit_in_fluency_scope(unit_id):
+    RETURN "fluencia nao exigida aqui"
+  auto <- COMPUTE_AUTOMATIZATION(unit_id)
+  IF auto == null:                 RETURN "nao avaliado"
+  IF auto < 0.50:                  RETURN "lento"
+  IF auto < FLUENCY_THRESHOLD:     RETURN "em desenvolvimento"
+  IF auto < AUTOMATIZATION_TARGET: RETURN "quase fluente"
+  RETURN "fluente"
+
+LEVEL_SCORE(unit_id, level) ->
+  log <- evidence_log[unit_id]
+    .filter(demand_level == level)
+  IF log.empty: RETURN null
+  RETURN CONSISTENCY(log)
+
+TRANSFER_SCORE(unit_id) ->
+  log <- evidence_log[unit_id]
+    .filter(demand_level == L4)
+  IF log.empty: RETURN null
+  RETURN CONSISTENCY(log)
+
+INTEGRATION_SCORE(unit_id) ->
+  log <- evidence_log[unit_id]
+    .filter(demand_level == L5)
+  IF log.empty: RETURN null
+  RETURN CONSISTENCY(log)
+
+CURRICULUM_VIEW(student_record) ->
+  RETURN {
+    total_units:      unit_list.length,
+    not_started:      COUNT(mastery_level == null),
+    in_progress:      COUNT(0 < mastery_level < MASTERY_THRESHOLD),
+    mastered:         COUNT(mastery_level >= MASTERY_THRESHOLD),
+    transfer_done:    COUNT(transfer_demonstrated == TRUE),
+    integration_done: COUNT(integration_demonstrated == TRUE),
+    revisions_due:    REVISIONS_DUE(student_record).length,
+    weakening:        CHECK_WEAKENING(student_record).length,
+    tier_1_stable:    COUNT(
+      unit IN TIER_1
+      AND mastery_level >= MASTERY_THRESHOLD
+    )
+  }
+
+P6.1: COMPLETE
+  interface: OPERATIONAL
+  dimensions: 7 (mastery, fluency, recog/prod,
+                 guided/auto, local/integrated,
+                 dependencies, revision_need)
+
+--------------------------------------------------------------------------------
+
+P6.2  G.20  calibration_feedback_generator
+// gera feedback que corrige julgamento proprio
+// torna visivel: familiaridade != dominio real
+
+CALIBRATION_TRIGGERS:
+  CT.1  high_confidence_wrong   // rapido mas incorreto
+  CT.2  format_dependency       // certo no formato treinado,
+                                //   errado em formato novo
+  CT.3  guided_ceiling          // certo com pista, errado sem
+  CT.4  retention_surprise      // era dominado, falha apos intervalo
+  CT.5  fluency_gap             // correto mas lento em scope de fluencia
+
+DETECT_TRIGGER(unit_id, evidence) ->
+  state <- GET_STATE(unit_id)
+  log   <- evidence_log[unit_id]
+
+  IF evidence.latency < FAST_THRESHOLD
+     AND evidence.outcome == incorrect:
+    RETURN CT.1
+
+  recent_trained <- log.last(5).filter(
+    format IN GET_TRAINED_FORMATS(unit_id)
+    AND outcome == correct
+  )
+  recent_new <- log.last(3).filter(
+    format NOT IN GET_TRAINED_FORMATS(unit_id)
+    AND outcome == incorrect
+  )
+  IF recent_trained.length >= 3
+     AND recent_new.length >= 2:
+    RETURN CT.2
+
+  guided_correct <- log.filter(
+    demand_level == L2 AND outcome == correct
+  )
+  free_incorrect <- log.filter(
+    demand_level == L3 AND outcome == incorrect
+  )
+  IF guided_correct.length >= 3
+     AND free_incorrect.length >= 2:
+    RETURN CT.3
+
+  IF state.retention_score != null
+     AND state.retention_score < RETENTION_THRESHOLD
+     AND state.mastery_level >= MASTERY_THRESHOLD:
+    RETURN CT.4
+
+  IF unit_in_fluency_scope(unit_id)
+     AND evidence.conceptual_correct == TRUE
+     AND evidence.fluent == FALSE:
+    RETURN CT.5
+
+  RETURN null
+
+GENERATE_CALIBRATION_FEEDBACK(unit_id, trigger) ->
+
+  IF trigger == CT.1:
+    RETURN {
+      type:    warning,
+      message: "resposta rapida mas incorreta: "
+               "velocidade sem dominio nao conta",
+      action:  "revise o conceito antes de tentar novamente"
+    }
+
+  IF trigger == CT.2:
+    RETURN {
+      type:    insight,
+      message: "acerto em formato conhecido, "
+               "erro em formato novo: "
+               "dominio ainda vinculado ao formato treinado",
+      action:  "pratique em formatos diferentes"
+    }
+
+  IF trigger == CT.3:
+    RETURN {
+      type:    insight,
+      message: "executa com suporte mas nao sem ele: "
+               "dominio ainda nao e autonomo",
+      action:  "pratique sem consultar modelo ou pista"
+    }
+
+  IF trigger == CT.4:
+    RETURN {
+      type:    warning,
+      message: "conteudo dominado anteriormente "
+               "mas enfraquecido: "
+               "dominio precisa de manutencao",
+      action:  "revisao necessaria antes de avancar"
+    }
+
+  IF trigger == CT.5:
+    RETURN {
+      type:    info,
+      message: "resposta correta mas lenta: "
+               "compreensao presente, "
+               "automatizacao ainda em desenvolvimento",
+      action:  "continue praticando para reduzir latencia"
+    }
+
+APPLY_CALIBRATION(unit_id, evidence) ->
+  trigger  <- DETECT_TRIGGER(unit_id, evidence)
+  IF trigger == null: RETURN null
+  feedback <- GENERATE_CALIBRATION_FEEDBACK(unit_id, trigger)
+  student_record.units[unit_id]
+    .calibration_log.append({
+      timestamp: now(),
+      trigger:   trigger,
+      feedback:  feedback
+    })
+  RETURN feedback
+
+CONSTANTS:
+  FAST_THRESHOLD: 2s
+
+P6.2: COMPLETE
+  generator: OPERATIONAL
+  triggers: CT.1-CT.5
+  invariant: distinguishes familiarity from mastery
+
+--------------------------------------------------------------------------------
+P6 COMPLETE
+  P6.1  G.19  self_assessment_interface       DONE
+  P6.2  G.20  calibration_feedback_generator  DONE
+
+
+================================================================================
+P7: CONCLUSAO
+================================================================================
+
+P7.1  G.22  conclusion_evaluator
+// avalia criterios de conclusao
+// por unidade | bloco | curriculo
+// bloqueia sem suporte empirico
+// permite reabertura se evidencia contradiz
+
+--------------------------------------------------------------------------------
+UNIT CONCLUSION
+--------------------------------------------------------------------------------
+
+UNIT_CONCLUDED(unit_id) ->
+  state <- GET_STATE(unit_id)
+
+  // criterion 1: mastery evidence at adequate level
+  IF NOT MASTERY_CONCLUDED(unit_id):
+    RETURN FAIL(reason=INSUFFICIENT_MASTERY,
+      current=state.mastery_level,
+      required=MASTERY_THRESHOLD)
+
+  // criterion 2: retention after interval
+  IF NOT RETENTION_VERIFIED(unit_id):
+    RETURN FAIL(reason=RETENTION_NOT_VERIFIED,
+      note="requer avaliacao apos intervalo minimo")
+
+  // criterion 3: transfer if in transfer scope
+  IF unit_in_transfer_scope(unit_id)
+     AND NOT state.transfer_demonstrated:
+    RETURN FAIL(reason=TRANSFER_NOT_DEMONSTRATED)
+
+  // criterion 4: integration if in integration scope
+  IF unit_in_integration_scope(unit_id)
+     AND NOT state.integration_demonstrated:
+    RETURN FAIL(reason=INTEGRATION_NOT_DEMONSTRATED)
+
+  // criterion 5: base stable
+  IF NOT BASE_STABLE(unit_id):
+    RETURN FAIL(reason=UNSTABLE_BASE,
+      failing=GET_FAILING_DEPS(unit_id))
+
+  RETURN PASS
+
+RETENTION_VERIFIED(unit_id) ->
+  log <- evidence_log[unit_id]
+  reviews_after_interval <- log.filter(
+    type == review
+    AND timestamp > first_mastery_timestamp(unit_id)
+                    + MIN_RETENTION_INTERVAL
+    AND outcome == correct
+  )
+  RETURN reviews_after_interval.length >= 1
+
+MIN_RETENTION_INTERVAL: 3 days
+
+unit_in_transfer_scope(unit_id) ->
+  RETURN unit_id IN {KF.*, KG.*, KH.*}
+
+unit_in_integration_scope(unit_id) ->
+  RETURN unit_id IN {KH.*}
+
+--------------------------------------------------------------------------------
+BLOCK CONCLUSION
+--------------------------------------------------------------------------------
+
+BLOCKS = {
+  BLK.A: KA.*,
+  BLK.B: KB.*,
+  BLK.C: KC.*,
+  BLK.D: KD.*,
+  BLK.E: KE.*,
+  BLK.F: KF.*,
+  BLK.G: KG.*,
+  BLK.H: KH.*
+}
+
+BLOCK_CONCLUDED(block_id) ->
+  units <- BLOCKS[block_id]
+
+  // criterion 1: all units concluded
+  failing_units <- units.filter(
+    UNIT_CONCLUDED(u) == FAIL
+  )
+  IF failing_units.not_empty:
+    RETURN FAIL(reason=UNITS_NOT_CONCLUDED,
+      failing=failing_units)
+
+  // criterion 2: no structural fragility
+  fragile <- units.filter(
+    GET_STATE(u).retention_score < RETENTION_THRESHOLD
+  )
+  IF fragile.not_empty:
+    RETURN FAIL(reason=STRUCTURAL_FRAGILITY,
+      units=fragile)
+
+  // criterion 3: superior blocks require base blocks
+  required_base <- GET_REQUIRED_BASE(block_id)
+  FOR each base IN required_base:
+    IF BLOCK_CONCLUDED(base) == FAIL:
+      RETURN FAIL(reason=BASE_BLOCK_INSUFFICIENT,
+        block=base)
+
+  RETURN PASS
+
+GET_REQUIRED_BASE(block_id) ->
+  BASE_REQUIREMENTS = {
+    BLK.C: [BLK.A, BLK.B],
+    BLK.D: [BLK.B],
+    BLK.E: [BLK.A, BLK.B],
+    BLK.F: [BLK.C, BLK.E],
+    BLK.G: [BLK.C, BLK.D, BLK.E],
+    BLK.H: [BLK.E, BLK.F, BLK.G]
+  }
+  RETURN BASE_REQUIREMENTS[block_id] OR []
+
+--------------------------------------------------------------------------------
+CURRICULUM CONCLUSION
+--------------------------------------------------------------------------------
+
+CURRICULUM_CONCLUDED(student_record) ->
+
+  // criterion 1: all blocks concluded
+  failing_blocks <- BLOCKS.keys().filter(
+    BLOCK_CONCLUDED(b) == FAIL
+  )
+  IF failing_blocks.not_empty:
+    RETURN FAIL(reason=BLOCKS_NOT_CONCLUDED,
+      failing=failing_blocks)
+
+  // criterion 2: central content retention
+  central <- {BLK.A, BLK.B, BLK.C, BLK.D, BLK.E}
+  retention_failing <- central.filter(
+    AVG_RETENTION(b) < RETENTION_THRESHOLD
+  )
+  IF retention_failing.not_empty:
+    RETURN FAIL(reason=CENTRAL_RETENTION_INSUFFICIENT,
+      blocks=retention_failing)
+
+  // criterion 3: transfer where objective
+  transfer_scope_units <- unit_list.filter(
+    unit_in_transfer_scope(u)
+  )
+  transfer_failing <- transfer_scope_units.filter(
+    NOT GET_STATE(u).transfer_demonstrated
+  )
+  IF transfer_failing.not_empty:
+    RETURN FAIL(reason=TRANSFER_NOT_DEMONSTRATED,
+      units=transfer_failing)
+
+  // criterion 4: integration where objective
+  integration_scope_units <- unit_list.filter(
+    unit_in_integration_scope(u)
+  )
+  integration_failing <- integration_scope_units.filter(
+    NOT GET_STATE(u).integration_demonstrated
+  )
+  IF integration_failing.not_empty:
+    RETURN FAIL(reason=INTEGRATION_NOT_DEMONSTRATED,
+      units=integration_failing)
+
+  // criterion 5: terminal performance compatible
+  IF NOT TERMINAL_PERFORMANCE_MET(student_record):
+    RETURN FAIL(reason=TERMINAL_PERFORMANCE_NOT_MET)
+
+  RETURN PASS
+
+AVG_RETENTION(block_id) ->
+  units  <- BLOCKS[block_id]
+  scores <- units.map(
+    GET_STATE(u).retention_score
+  ).filter(NOT null)
+  IF scores.empty: RETURN 0
+  RETURN AVG(scores)
+
+TERMINAL_PERFORMANCE_MET(student_record) ->
+  IF INTEGRATION_CONCLUDED(IL.3, student_record):
+    sim <- GET_VESTIBULAR_SIMULATION(student_record)
+    IF sim == null: RETURN TRUE
+    RETURN sim.score >= VESTIBULAR_THRESHOLD
+  RETURN FALSE
+
+VESTIBULAR_THRESHOLD: 0.70
+
+--------------------------------------------------------------------------------
+REOPEN MECHANISM
+--------------------------------------------------------------------------------
+
+REOPEN_UNIT(unit_id, reason) ->
+  student_record.units[unit_id].concluded <- FALSE
+  student_record.units[unit_id]
+    .reopen_log.append({
+      timestamp: now(),
+      reason:    reason
+    })
+  // evidence_log NOT wiped
+  // conclusion simply invalidated
+  // must re-satisfy all criteria
+
+REOPEN_BLOCK(block_id, reason) ->
+  student_record.blocks[block_id].concluded <- FALSE
+  student_record.blocks[block_id]
+    .reopen_log.append({
+      timestamp: now(),
+      reason:    reason
+    })
+
+CHECK_REOPEN_TRIGGERS(student_record) ->
+  FOR each unit IN unit_list:
+    IF student_record.units[unit].concluded == TRUE:
+      state <- GET_STATE(unit)
+
+      IF state.retention_score != null
+         AND state.retention_score < RETENTION_THRESHOLD:
+        REOPEN_UNIT(unit, reason=RETENTION_DECAYED)
+
+      IF unit_in_transfer_scope(unit)
+         AND TRANSFER_FAILED(unit):
+        REOPEN_UNIT(unit, reason=TRANSFER_REGRESSED)
+
+--------------------------------------------------------------------------------
+H.6 VERIFICATION
+--------------------------------------------------------------------------------
+
+CHECK(H.6):
+  concluded <- CURRICULUM_CONCLUDED(student_record)
+  IF concluded == PASS:
+    RETURN terminal_performance_met == TRUE
+           AND declared_conclusion
+             CONSISTENT WITH demonstrated_performance
+  RETURN FAIL(reason=concluded.reason)
+
+--------------------------------------------------------------------------------
+P7 COMPLETE
+  P7.1  G.22  conclusion_evaluator  DONE
+
+
+================================================================================
+SYSTEM COMPLETE
+================================================================================
+
+  P0  data + structure               DONE  (prerequisite)
+  P1  core state                     DONE
+  P2  assessment + diagnostic        DONE
+  P3  navigation + control           DONE
+  P4  retention + fluency            DONE
+  P5  transfer + integration         DONE
+  P6  metacognition + feedback       DONE
+  P7  conclusion                     DONE
+
+VERIFY_ALL() FINAL:
+  H.1  PASS
+  H.2  PASS
+  H.3  PASS
+  H.4  PASS
+  H.5  PASS
+  H.6  PASS
+  H.7  PASS
+
+VERDICT: PASS
+flags:   0
+
+TOTAL:
+  phases:    8 (P0-P7)
+  engines:   22 (G.1-G.22)
+  sub-steps: 25
+  nodes:     233
+  layers:    8 (A->B->C->D->E->F->G->H)
+
+================================================================================

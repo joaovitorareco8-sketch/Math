@@ -1,0 +1,716 @@
+[
+  {
+    "template_id": "KC-dist-L2-choice",
+    "unit_id": "KC.3",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a} × ({b} + {c}) = ?",
+    "correct": "{a*(b+c)}",
+    "feedback_correct": "{a} × ({b} + {c}) = {a}×{b} + {a}×{c} = {a*b} + {a*c} = {a*(b+c)}.",
+    "distractors": [
+      {
+        "value": "{a*b * a*c}",
+        "distractor_type": "GENERALIZAÇÃO_INDEVIDA",
+        "feedback": "Distributiva é sobre soma, não produto. {a}×({b}+{c}) = {a}×{b} + {a}×{c} = {a*(b+c)}."
+      },
+      {
+        "value": "{a*b + c}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você distribuiu só para {b}. O {a} multiplica ambos os termos: {a}×{b} + {a}×{c} = {a*(b+c)}."
+      },
+      {
+        "value": "{(a+b)*(a+c)}",
+        "distractor_type": "GENERALIZAÇÃO_INDEVIDA",
+        "feedback": "Distributiva não funciona assim. {a}×({b}+{c}) = {a}×{b} + {a}×{c} = {a*(b+c)}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 4, 5, 6, 7],
+        "b": [3, 4, 5, 6, 7, 8],
+        "c": [2, 3, 4, 5]
+      },
+      "constraints": ["a, b, c inteiros positivos"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "4", "b": "7", "c": "3" },
+        "question": "4 × (7 + 3) = ?",
+        "correct": "40",
+        "distractors": ["336", "31", "50"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-prior-L2-choice",
+    "unit_id": "KC.8",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{expr} = ?",
+    "correct": "{result}",
+    "feedback_correct": "Resolvendo por prioridade: {steps}. Resultado: {result}.",
+    "distractors": [
+      {
+        "value": "{left_to_right}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você resolveu da esquerda para a direita. Multiplicação e divisão têm prioridade sobre adição e subtração."
+      },
+      {
+        "value": "{wrong_paren}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Verifique os parênteses. Eles alteram a prioridade padrão."
+      },
+      {
+        "value": "{partial}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você resolveu parte da expressão. Complete todas as operações: {steps}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "expr": ["2 + 3 × 4", "10 - 2 × 3 + 1", "(2 + 3) × 4", "8 ÷ 2 + 3 × 2", "5 × (3 + 2) - 4"],
+        "result": "resultado correto",
+        "left_to_right": "resultado resolvendo da esquerda para direita",
+        "wrong_paren": "resultado ignorando parênteses",
+        "steps": "descrição passo a passo",
+        "partial": "resultado de resolução incompleta"
+      },
+      "constraints": ["expr deve ter pelo menos 2 operações distintas"]
+    },
+    "seed_examples": [
+      {
+        "params": { "expr": "2 + 3 × 4", "result": "14", "left_to_right": "20", "wrong_paren": "20", "steps": "3×4=12, depois 2+12=14", "partial": "5 × 4" },
+        "question": "2 + 3 × 4 = ?",
+        "correct": "14",
+        "distractors": ["20", "17", "24"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-sinal-L2-choice",
+    "unit_id": "KC.7",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "({a}) × ({b}) = ?",
+    "correct": "{a*b}",
+    "feedback_correct": "({a}) × ({b}) = {a*b}. {sign_rule}",
+    "distractors": [
+      {
+        "value": "{-1 * a * b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{sign_error}. O resultado é {a*b}."
+      },
+      {
+        "value": "{abs(a*b) + abs(a)}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Erro no cálculo. ({a}) × ({b}) = {a*b}."
+      },
+      {
+        "value": "{a+b}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Você somou em vez de multiplicar. ({a}) × ({b}) = {a*b}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [-3, -5, -7, -2, 4, -6],
+        "b": [-4, -3, 2, -5, -3, 3],
+        "sign_rule": "neg×neg=pos ou neg×pos=neg conforme o caso",
+        "sign_error": "descrição do erro de sinal cometido"
+      },
+      "constraints": ["incluir neg×neg e neg×pos"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "-3", "b": "-4", "sign_rule": "Negativo × negativo = positivo.", "sign_error": "Negativo × negativo dá positivo, não negativo" },
+        "question": "(-3) × (-4) = ?",
+        "correct": "12",
+        "distractors": ["-12", "15", "-7"]
+      },
+      {
+        "params": { "a": "-5", "b": "2", "sign_rule": "Negativo × positivo = negativo.", "sign_error": "Negativo × positivo dá negativo, não positivo" },
+        "question": "(-5) × (2) = ?",
+        "correct": "-10",
+        "distractors": ["10", "-7", "-3"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-inv-mult-L1-choice",
+    "unit_id": "KC.10",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual é o inverso multiplicativo de {a}/{b}?",
+    "correct": "{b}/{a}",
+    "feedback_correct": "O inverso multiplicativo de {a}/{b} é {b}/{a}, pois {a}/{b} × {b}/{a} = 1.",
+    "distractors": [
+      {
+        "value": "{a}/1",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você inverteu só o denominador. O inverso troca numerador e denominador: {b}/{a}."
+      },
+      {
+        "value": "-{a}/{b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você deu o oposto, não o inverso multiplicativo. O inverso de {a}/{b} é {b}/{a}."
+      },
+      {
+        "value": "1/{a}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "1/{a} seria o inverso de {a}, não de {a}/{b}. O inverso de {a}/{b} é {b}/{a}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 4, 5, 7],
+        "b": [3, 4, 5, 7, 9]
+      },
+      "constraints": ["a != b", "fração irredutível"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "3", "b": "4" },
+        "question": "Qual é o inverso multiplicativo de 3/4?",
+        "correct": "4/3",
+        "distractors": ["3/1", "-3/4", "1/3"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-prod-pot-L2-choice",
+    "unit_id": "KC.13",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a}^{m} × {a}^{n} = ?",
+    "correct": "{a}^{m+n}",
+    "feedback_correct": "Mesma base: soma os expoentes. {a}^{m} × {a}^{n} = {a}^{m+n}.",
+    "distractors": [
+      {
+        "value": "{a}^{m*n}",
+        "distractor_type": "GENERALIZAÇÃO_INDEVIDA",
+        "feedback": "Você multiplicou os expoentes. Isso vale para potência de potência: ({a}^{m})^{n} = {a}^{m*n}. No produto, soma-se: {a}^{m+n}."
+      },
+      {
+        "value": "{a*a}^{m+n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "A base não muda. {a}^{m} × {a}^{n} = {a}^{m+n}, não {a*a}^{m+n}."
+      },
+      {
+        "value": "{a}^{m} + {a}^{n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Produto de potências não vira soma. {a}^{m} × {a}^{n} = {a}^{m+n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 5, "x", "y"],
+        "m": [2, 3, 4],
+        "n": [1, 2, 3]
+      },
+      "constraints": ["m + n <= 8 para casos numéricos"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "2", "m": "3", "n": "4" },
+        "question": "2³ × 2⁴ = ?",
+        "correct": "2⁷",
+        "distractors": ["2¹²", "4⁷", "2³ + 2⁴"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-quot-pot-L2-choice",
+    "unit_id": "KC.14",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a}^{m} ÷ {a}^{n} = ?",
+    "correct": "{a}^{m-n}",
+    "feedback_correct": "Mesma base: subtrai os expoentes. {a}^{m} ÷ {a}^{n} = {a}^{m-n}.",
+    "distractors": [
+      {
+        "value": "1^{m-n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "A base não muda para 1. {a}^{m} ÷ {a}^{n} = {a}^{m-n}."
+      },
+      {
+        "value": "{a}^{m+n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "No quociente, subtrai-se os expoentes. No produto é que se soma. {a}^{m} ÷ {a}^{n} = {a}^{m-n}."
+      },
+      {
+        "value": "{a}^{m/n}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você dividiu os expoentes. A operação correta é subtração: {a}^{m-n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 5, "x"],
+        "m": [4, 5, 6, 7],
+        "n": [1, 2, 3]
+      },
+      "constraints": ["m > n"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "3", "m": "5", "n": "2" },
+        "question": "3⁵ ÷ 3² = ?",
+        "correct": "3³",
+        "distractors": ["1³", "3⁷", "3^(5/2)"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-pot-pot-L2-choice",
+    "unit_id": "KC.15",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "({a}^{m})^{n} = ?",
+    "correct": "{a}^{m*n}",
+    "feedback_correct": "Potência de potência: multiplica os expoentes. ({a}^{m})^{n} = {a}^{m×n} = {a}^{m*n}.",
+    "distractors": [
+      {
+        "value": "{a}^{m+n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você somou os expoentes. Isso vale para o produto de potências. Aqui, potência de potência, multiplica: {a}^{m*n}."
+      },
+      {
+        "value": "{a*a}^{m*n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "A base não muda. ({a}^{m})^{n} = {a}^{m*n}."
+      },
+      {
+        "value": "{a}^{m}^{n}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Os expoentes se multiplicam, não se empilham. ({a}^{m})^{n} = {a}^{m*n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, "x", "y"],
+        "m": [2, 3, 4],
+        "n": [2, 3]
+      },
+      "constraints": []
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "2", "m": "3", "n": "2" },
+        "question": "(2³)² = ?",
+        "correct": "2⁶",
+        "distractors": ["2⁵", "4⁶", "2⁹"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-exp-zero-L1-choice",
+    "unit_id": "KC.17",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 3,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a}^0 = ?",
+    "correct": "1",
+    "feedback_correct": "Qualquer número (exceto 0) elevado a 0 é 1. {a}^0 = 1.",
+    "distractors": [
+      {
+        "value": "0",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{a}^0 ≠ 0. Todo número (exceto 0) elevado a 0 é 1."
+      },
+      {
+        "value": "{a}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{a}^0 ≠ {a}. Expoente 0 sempre resulta em 1 (para base ≠ 0)."
+      },
+      {
+        "value": "{a}^1",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "O expoente é 0, não 1. {a}^0 = 1."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 5, 7, 10, 100, -4, 0.5]
+      },
+      "constraints": ["a != 0"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "7" },
+        "question": "7⁰ = ?",
+        "correct": "1",
+        "distractors": ["0", "7", "7¹"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-exp-neg-L2-choice",
+    "unit_id": "KC.18",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a}^(-{n}) = ?",
+    "correct": "1/{a}^{n}",
+    "feedback_correct": "Expoente negativo inverte a base. {a}^(-{n}) = 1/{a}^{n}.",
+    "distractors": [
+      {
+        "value": "-{a}^{n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Expoente negativo não torna o resultado negativo. {a}^(-{n}) = 1/{a}^{n}."
+      },
+      {
+        "value": "(-{a})^{n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "O sinal negativo está no expoente, não na base. {a}^(-{n}) = 1/{a}^{n}."
+      },
+      {
+        "value": "1/(-{a}^{n})",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "A base permanece positiva. {a}^(-{n}) = 1/{a}^{n}, não 1/(-{a}^{n})."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 5, 10],
+        "n": [1, 2, 3]
+      },
+      "constraints": []
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "2", "n": "3" },
+        "question": "2^(-3) = ?",
+        "correct": "1/2³",
+        "distractors": ["-2³", "(-2)³", "1/(-8)"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-exp-frac-L2-choice",
+    "unit_id": "KC.20",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a}^(1/{n}) = ?",
+    "correct": "{n}√{a}",
+    "feedback_correct": "Expoente fracionário 1/{n} equivale à raiz {n}-ésima. {a}^(1/{n}) = {n}√{a}.",
+    "distractors": [
+      {
+        "value": "{a}/{n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Expoente fracionário não é divisão da base. {a}^(1/{n}) = {n}√{a}."
+      },
+      {
+        "value": "{a}^{n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você inverteu: 1/{n} no expoente é raiz, não potência. {a}^(1/{n}) = {n}√{a}."
+      },
+      {
+        "value": "√{a} / {n}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "O índice da raiz é {n}, não um divisor externo. {a}^(1/{n}) = {n}√{a}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [4, 8, 9, 16, 25, 27],
+        "n": [2, 3]
+      },
+      "constraints": ["a deve ser potência perfeita de n"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "8", "n": "3" },
+        "question": "8^(1/3) = ?",
+        "correct": "∛8",
+        "distractors": ["8/3", "8³", "√8/3"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-rad-prod-L2-choice",
+    "unit_id": "KC.21",
+    "level": "L2",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "√({a} + {b}) = ?",
+    "correct": "não simplifica para √{a} + √{b}",
+    "feedback_correct": "√(a+b) ≠ √a + √b. A propriedade do radical vale para produto: √(a×b) = √a × √b.",
+    "distractors": [
+      {
+        "value": "√{a} + √{b}",
+        "distractor_type": "GENERALIZAÇÃO_INDEVIDA",
+        "feedback": "A propriedade do radical não distribui sobre soma. √(a+b) ≠ √a + √b. Verifique: √(9+16) = √25 = 5 ≠ 3+4 = 7."
+      },
+      {
+        "value": "√{a} × √{b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "√a × √b = √(a×b), não √(a+b). A expressão √({a}+{b}) não simplifica dessa forma."
+      },
+      {
+        "value": "{a} + {b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "A raiz não cancela a soma. √({a}+{b}) ≠ {a}+{b}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [9, 4, 16, 25],
+        "b": [16, 9, 9, 11]
+      },
+      "constraints": ["a+b deve ser quadrado perfeito para tornar o contraexemplo claro"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "9", "b": "16" },
+        "question": "√(9 + 16) = ?",
+        "correct": "√25 = 5",
+        "distractors": ["√9 + √16 = 7", "√9 × √16 = 12", "25"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-quad-soma-L2-choice",
+    "unit_id": "KC.11",
+    "level": "L2",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "({a} + {b})² = ?",
+    "correct": "{a}² + 2×{a}×{b} + {b}²",
+    "feedback_correct": "({a}+{b})² = {a}² + 2×{a}×{b} + {b}². Não esqueça o termo do meio.",
+    "distractors": [
+      {
+        "value": "{a}² + {b}²",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Faltou o termo do meio. ({a}+{b})² = {a}² + 2×{a}×{b} + {b}², não apenas {a}²+{b}²."
+      },
+      {
+        "value": "{a}² - 2×{a}×{b} + {b}²",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "O sinal do meio é positivo na soma. ({a}+{b})² = {a}² + 2×{a}×{b} + {b}²."
+      },
+      {
+        "value": "{a}² × {b}²",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Quadrado da soma não é produto dos quadrados. ({a}+{b})² = {a}² + 2×{a}×{b} + {b}²."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": ["x", 2, 3, "a"],
+        "b": [1, 2, 3, "b"]
+      },
+      "constraints": []
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "x", "b": "3" },
+        "question": "(x + 3)² = ?",
+        "correct": "x² + 6x + 9",
+        "distractors": ["x² + 9", "x² - 6x + 9", "x² × 9"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-log-prod-L2-choice",
+    "unit_id": "KC.26",
+    "level": "L2",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "log({a} × {b}) = ?",
+    "correct": "log({a}) + log({b})",
+    "feedback_correct": "Propriedade do produto: log(a×b) = log(a) + log(b).",
+    "distractors": [
+      {
+        "value": "log({a}) × log({b})",
+        "distractor_type": "GENERALIZAÇÃO_INDEVIDA",
+        "feedback": "Produto nos argumentos vira soma dos logs, não produto. log({a}×{b}) = log({a}) + log({b})."
+      },
+      {
+        "value": "log({a}+{b})",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "log(a×b) ≠ log(a+b). A propriedade é: produto nos argumentos → soma dos logs."
+      },
+      {
+        "value": "log({a}) - log({b})",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Subtração é para quociente: log(a/b) = log(a) - log(b). Para produto: log(a×b) = log(a) + log(b)."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 4, 5, 10, 100],
+        "b": [2, 5, 10, 4]
+      },
+      "constraints": ["preferencialmente com valores cujos logs são conhecidos"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "10", "b": "100" },
+        "question": "log(10 × 100) = ?",
+        "correct": "log(10) + log(100) = 1 + 2 = 3",
+        "distractors": ["log(10) × log(100) = 2", "log(110)", "log(10) - log(100) = -1"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KC-log-pot-L2-choice",
+    "unit_id": "KC.28",
+    "level": "L2",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "log({a}^{n}) = ?",
+    "correct": "{n} × log({a})",
+    "feedback_correct": "Propriedade da potência: log(aⁿ) = n × log(a). O expoente desce como fator.",
+    "distractors": [
+      {
+        "value": "log({a}) + {n}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "O expoente vira fator multiplicativo, não somado. log({a}^{n}) = {n} × log({a})."
+      },
+      {
+        "value": "log({a}^{n})",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "Aplique a propriedade: o expoente {n} desce como fator. log({a}^{n}) = {n} × log({a})."
+      },
+      {
+        "value": "(log {a})^{n}",
+        "distractor_type": "GENERALIZAÇÃO_INDEVIDA",
+        "feedback": "O expoente do argumento não vira expoente do log. log({a}^{n}) = {n} × log({a})."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 5, 10],
+        "n": [2, 3, 4]
+      },
+      "constraints": []
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "2", "n": "3" },
+        "question": "log(2³) = ?",
+        "correct": "3 × log(2)",
+        "distractors": ["log(2) + 3", "log(8)", "(log 2)³"]
+      }
+    ]
+  }
+]
