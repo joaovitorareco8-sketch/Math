@@ -1,0 +1,519 @@
+[
+  {
+    "template_id": "KF-leit-pot-L1-choice",
+    "unit_id": "KF.1",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a}^{n} = ?",
+    "correct": "{a**n}",
+    "feedback_correct": "{a}^{n} = {a} multiplicado por si mesmo {n} vezes = {a**n}.",
+    "distractors": [
+      {
+        "value": "{a*n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você multiplicou base pelo expoente. {a}^{n} significa {a} × {a} × ... ({n} vezes) = {a**n}, não {a}×{n}."
+      },
+      {
+        "value": "{a+n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você somou base e expoente. {a}^{n} = {a**n}."
+      },
+      {
+        "value": "{(a+1)**n}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{(a+1)**n} = {a+1}^{n}. A base é {a}, não {a+1}. {a}^{n} = {a**n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 4, 5],
+        "n": [2, 3, 4]
+      },
+      "constraints": ["a**n <= 1000"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "3", "n": "3" },
+        "question": "3³ = ?",
+        "correct": "27",
+        "distractors": ["9", "6", "64"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KF-raiz-exata-L1-choice",
+    "unit_id": "KF.2",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "√{n} = ?",
+    "correct": "{sqrt_n}",
+    "feedback_correct": "√{n} = {sqrt_n} pois {sqrt_n}² = {n}.",
+    "distractors": [
+      {
+        "value": "{n/2}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Raiz quadrada não é metade. √{n} = {sqrt_n} pois {sqrt_n}² = {n}."
+      },
+      {
+        "value": "{sqrt_n + 1}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{sqrt_n+1}² = {(sqrt_n+1)**2} ≠ {n}. √{n} = {sqrt_n}."
+      },
+      {
+        "value": "{sqrt_n - 1}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{sqrt_n-1}² = {(sqrt_n-1)**2} ≠ {n}. √{n} = {sqrt_n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169],
+        "sqrt_n": "raiz quadrada exata de n"
+      },
+      "constraints": ["n quadrado perfeito"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "144", "sqrt_n": "12" },
+        "question": "√144 = ?",
+        "correct": "12",
+        "distractors": ["72", "13", "11"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KF-raiz-cubica-L1-choice",
+    "unit_id": "KF.3",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "∛{n} = ?",
+    "correct": "{cbrt_n}",
+    "feedback_correct": "∛{n} = {cbrt_n} pois {cbrt_n}³ = {n}.",
+    "distractors": [
+      {
+        "value": "{cbrt_n + 1}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{cbrt_n+1}³ = {(cbrt_n+1)**3} ≠ {n}. ∛{n} = {cbrt_n}."
+      },
+      {
+        "value": "{n/3}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Raiz cúbica não é dividir por 3. ∛{n} = {cbrt_n} pois {cbrt_n}³ = {n}."
+      },
+      {
+        "value": "{cbrt_n**2}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você elevou ao quadrado em vez de encontrar a raiz. ∛{n} = {cbrt_n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [8, 27, 64, 125, 216, 343, 512, 1000],
+        "cbrt_n": "raiz cúbica exata de n"
+      },
+      "constraints": ["n cubo perfeito"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "64", "cbrt_n": "4" },
+        "question": "∛64 = ?",
+        "correct": "4",
+        "distractors": ["5", "32", "16"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KF-simp-rad-L2-write",
+    "unit_id": "KF.4",
+    "level": "L2",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Simplifique √{n}.",
+    "correct": "{a}√{b}",
+    "feedback_correct": "{n} = {a**2} × {b}. Então √{n} = √({a**2} × {b}) = {a}√{b}.",
+    "distractors": [
+      {
+        "value": "√{a} + √{b}",
+        "distractor_type": "GENERALIZAÇÃO_INDEVIDA",
+        "feedback": "√(a×b) = √a × √b, não √a + √b. √{n} = √({a**2}×{b}) = {a}√{b}."
+      },
+      {
+        "value": "{a}√{a**2}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "O fator dentro da raiz deve ser o resíduo irredutível, não o fator quadrado. √{n} = {a}√{b}."
+      },
+      {
+        "value": "{n/2}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Simplificar raiz não é dividir por 2. Fatore {n} = {a**2} × {b} e extraia {a}: {a}√{b}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [12, 18, 20, 27, 28, 45, 50, 72, 75, 98],
+        "a": "fator extraído (√ do fator quadrado perfeito)",
+        "b": "resíduo irredutível"
+      },
+      "constraints": ["n não é quadrado perfeito", "tem fator quadrado perfeito > 1"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "12", "a": "2", "b": "3" },
+        "question": "Simplifique √12.",
+        "correct": "2√3",
+        "distractors": ["√2 + √6", "2√4", "6"]
+      },
+      {
+        "params": { "n": "50", "a": "5", "b": "2" },
+        "question": "Simplifique √50.",
+        "correct": "5√2",
+        "distractors": ["√5 + √10", "5√5", "25"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KF-rac-simples-L2-write",
+    "unit_id": "KF.6",
+    "level": "L2",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Racionalize: 1/√{n}",
+    "correct": "√{n}/{n}",
+    "feedback_correct": "Multiplique por √{n}/√{n}: (1×√{n})/(√{n}×√{n}) = √{n}/{n}.",
+    "distractors": [
+      {
+        "value": "√{n}/√{n}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "√{n}/√{n} = 1. Você não multiplicou o numerador corretamente. 1/√{n} × √{n}/√{n} = √{n}/{n}."
+      },
+      {
+        "value": "1/{n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "A racionalização mantém a raiz no numerador. 1/√{n} = √{n}/{n}, não 1/{n}."
+      },
+      {
+        "value": "√{n}/{n**2}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "√{n} × √{n} = {n}, não {n}². 1/√{n} = √{n}/{n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "n": [2, 3, 5, 6, 7]
+      },
+      "constraints": ["n não é quadrado perfeito"]
+    },
+    "seed_examples": [
+      {
+        "params": { "n": "3" },
+        "question": "Racionalize: 1/√3",
+        "correct": "√3/3",
+        "distractors": ["√3/√3", "1/3", "√3/9"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KF-rac-conj-L3-write",
+    "unit_id": "KF.7",
+    "level": "L3",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Racionalize: 1/(√{a} + {b})",
+    "correct": "(√{a} - {b})/({a} - {b**2})",
+    "feedback_correct": "Multiplique pelo conjugado (√{a} - {b}): numerador = √{a} - {b}; denominador = (√{a})² - {b}² = {a} - {b**2}.",
+    "distractors": [
+      {
+        "value": "1/(√{a} + {b}) × (√{a} + {b})/(√{a} + {b})",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Multiplique pelo conjugado, não pela mesma expressão. Conjugado de (√{a}+{b}) é (√{a}-{b})."
+      },
+      {
+        "value": "(√{a} + {b})/({a} + {b**2})",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "(a+b)(a-b) = a²-b². O denominador deve ser {a}-{b**2}, não {a}+{b**2}."
+      },
+      {
+        "value": "(√{a} - {b})/{a}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "O denominador é (√{a})²-{b}² = {a}-{b**2}, não apenas {a}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [3, 5, 7, 2],
+        "b": [1, 2, 1, 3]
+      },
+      "constraints": ["a - b**2 != 0"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "3", "b": "1" },
+        "question": "Racionalize: 1/(√3 + 1)",
+        "correct": "(√3 - 1)/2",
+        "distractors": ["(√3+1)/(√3+1)²", "(√3+1)/4", "(√3-1)/3"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KF-equiv-log-L2-choice",
+    "unit_id": "KF.8",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "log_{b}({n}) = {e} é equivalente a qual equação?",
+    "correct": "{b}^{e} = {n}",
+    "feedback_correct": "log_{b}({n}) = {e} ↔ {b}^{e} = {n}. O logaritmo é o expoente.",
+    "distractors": [
+      {
+        "value": "{e}^{b} = {n}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você inverteu base e expoente. log_{b}({n}) = {e} significa {b}^{e} = {n}, não {e}^{b} = {n}."
+      },
+      {
+        "value": "{b}^{n} = {e}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você trocou n e e. log_{b}({n}) = {e} ↔ {b}^{e} = {n}."
+      },
+      {
+        "value": "{n}^{b} = {e}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Base e argumento estão trocados. log_{b}({n}) = {e} ↔ {b}^{e} = {n}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "b": [2, 3, 5, 10],
+        "e": [2, 3, 4],
+        "n": "b**e"
+      },
+      "constraints": []
+    },
+    "seed_examples": [
+      {
+        "params": { "b": "2", "e": "3", "n": "8" },
+        "question": "log₂(8) = 3 é equivalente a qual equação?",
+        "correct": "2³ = 8",
+        "distractors": ["3² = 8", "2⁸ = 3", "8² = 3"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KF-prop-log-L3-write",
+    "unit_id": "KF.9",
+    "level": "L3",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Simplifique: log({a}) + log({b})",
+    "correct": "log({a*b})",
+    "feedback_correct": "log(a) + log(b) = log(a×b). log({a}) + log({b}) = log({a*b}).",
+    "distractors": [
+      {
+        "value": "log({a}) × log({b})",
+        "distractor_type": "GENERALIZAÇÃO_INDEVIDA",
+        "feedback": "Soma de logs vira log do produto, não produto dos logs. log({a})+log({b}) = log({a*b})."
+      },
+      {
+        "value": "log({a+b})",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "log(a)+log(b) = log(a×b), não log(a+b). log({a})+log({b}) = log({a*b})."
+      },
+      {
+        "value": "log({a}/{b})",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Subtração de logs vira log do quociente. Para soma: log({a})+log({b}) = log({a*b})."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 4, 5, 10, 100],
+        "b": [5, 25, 2, 10, 10]
+      },
+      "constraints": ["preferencialmente a*b é potência de 10 para simplificação elegante"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "2", "b": "5" },
+        "question": "Simplifique: log(2) + log(5)",
+        "correct": "log(10) = 1",
+        "distractors": ["log(2)×log(5)", "log(7)", "log(2/5)"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KF-eq-log-L3-write",
+    "unit_id": "KF.10",
+    "level": "L3",
+    "format": "symbolic",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Resolva: log_{b}(x) = {e}",
+    "correct": "x = {b**e}",
+    "feedback_correct": "log_{b}(x) = {e} ↔ x = {b}^{e} = {b**e}.",
+    "distractors": [
+      {
+        "value": "x = {b*e}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "log_{b}(x) = {e} significa x = {b}^{e}, não {b}×{e}. x = {b**e}."
+      },
+      {
+        "value": "x = {e**b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Base e expoente estão trocados. x = {b}^{e} = {b**e}, não {e}^{b}."
+      },
+      {
+        "value": "x = {b+e}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "log não se resolve por soma. x = {b}^{e} = {b**e}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "b": [2, 3, 5, 10],
+        "e": [2, 3, 4]
+      },
+      "constraints": []
+    },
+    "seed_examples": [
+      {
+        "params": { "b": "3", "e": "3" },
+        "question": "Resolva: log₃(x) = 3",
+        "correct": "x = 27",
+        "distractors": ["x = 9", "x = 27 errado (3³=27 ok)", "x = 6"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KF-restric-log-L2-choice",
+    "unit_id": "KF.11",
+    "level": "L2",
+    "format": "error_detection",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual das seguintes expressões NÃO existe?",
+    "correct": "{invalid}",
+    "feedback_correct": "{invalid} não existe porque {reason}.",
+    "distractors": [
+      {
+        "value": "{valid1}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{valid1} existe. {valid1_reason}."
+      },
+      {
+        "value": "{valid2}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{valid2} existe. {valid2_reason}."
+      },
+      {
+        "value": "{valid3}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{valid3} existe. {valid3_reason}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "invalid": ["log₂(0)", "log(-2)(8)", "log₁(5)", "log₃(-9)"],
+        "reason": [
+          "argumento deve ser positivo (log(0) é indefinido)",
+          "base deve ser positiva e diferente de 1",
+          "base não pode ser 1",
+          "argumento deve ser positivo"
+        ],
+        "valid1": "log com base e argumento válidos",
+        "valid2": "outra expressão logarítmica válida",
+        "valid3": "terceira expressão válida",
+        "valid1_reason": "base > 0, base ≠ 1, argumento > 0",
+        "valid2_reason": "idem",
+        "valid3_reason": "idem"
+      },
+      "constraints": ["sempre incluir caso de argumento zero e caso de base negativa"]
+    },
+    "seed_examples": [
+      {
+        "params": { "invalid": "log₂(0)", "reason": "argumento deve ser positivo", "valid1": "log₂(8)", "valid2": "log₃(9)", "valid3": "log₁₀(100)", "valid1_reason": "base=2>0, arg=8>0", "valid2_reason": "base=3>0, arg=9>0", "valid3_reason": "base=10>0, arg=100>0" },
+        "question": "Qual das seguintes expressões NÃO existe?",
+        "correct": "log₂(0)",
+        "distractors": ["log₂(8)", "log₃(9)", "log₁₀(100)"]
+      }
+    ]
+  }
+]

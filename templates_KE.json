@@ -1,0 +1,793 @@
+[
+  {
+    "template_id": "KE-frac-inteiro-L1-choice",
+    "unit_id": "KE.1",
+    "level": "L1",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Uma pizza é dividida em {b} fatias iguais. {a} fatias foram comidas. Qual fração representa as fatias comidas?",
+    "correct": "{a}/{b}",
+    "feedback_correct": "{a} partes de {b} totais = {a}/{b}.",
+    "distractors": [
+      {
+        "value": "{b}/{a}",
+        "distractor_type": "ERRO_DIREÇÃO",
+        "feedback": "Você inverteu. A fração é parte/todo = {a}/{b}, não {b}/{a}."
+      },
+      {
+        "value": "{b-a}/{b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{b-a}/{b} representa as fatias que sobraram. As comidas são {a}/{b}."
+      },
+      {
+        "value": "{a}/{b-a}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "O denominador é o total de partes ({b}), não o restante. Fração = {a}/{b}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [1, 2, 3, 5],
+        "b": [4, 6, 8, 10]
+      },
+      "constraints": ["a < b", "a e b sem fator comum para evitar simplificação prematura"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "3", "b": "8" },
+        "question": "Uma pizza é dividida em 8 fatias iguais. 3 fatias foram comidas. Qual fração representa as fatias comidas?",
+        "correct": "3/8",
+        "distractors": ["8/3", "5/8", "3/5"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-equiv-L2-choice",
+    "unit_id": "KE.4",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual fração é equivalente a {a}/{b}?",
+    "correct": "{a*k}/{b*k}",
+    "feedback_correct": "{a}/{b} = {a*k}/{b*k} pois multiplicamos numerador e denominador por {k}.",
+    "distractors": [
+      {
+        "value": "{a+1}/{b+1}",
+        "distractor_type": "GENERALIZAÇÃO_INDEVIDA",
+        "feedback": "Somar o mesmo valor ao numerador e denominador não preserva equivalência. Multiplique ambos pelo mesmo fator. {a}/{b} = {a*k}/{b*k}."
+      },
+      {
+        "value": "{a*k}/{b}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Você multiplicou só o numerador. Para equivalência, multiplique numerador E denominador pelo mesmo valor."
+      },
+      {
+        "value": "{a}/{b*k}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Você multiplicou só o denominador. Para equivalência, multiplique numerador E denominador pelo mesmo valor."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [1, 2, 3, 1, 3],
+        "b": [2, 3, 4, 3, 5],
+        "k": [2, 3, 4]
+      },
+      "constraints": ["fração a/b irredutível", "k >= 2"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "3", "b": "4", "k": "3" },
+        "question": "Qual fração é equivalente a 3/4?",
+        "correct": "9/12",
+        "distractors": ["4/5", "9/4", "3/12"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-comp-L2-choice",
+    "unit_id": "KE.7",
+    "level": "L2",
+    "format": "comparison",
+    "context": "bare",
+    "interaction": "I1",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Qual é maior: {a}/{b} ou {c}/{d}?",
+    "correct": "{larger}",
+    "feedback_correct": "Igualando denominadores: {a}/{b} = {an}/{bd} e {c}/{d} = {cn}/{bd}. {an} {op} {cn}, então {larger} é maior.",
+    "distractors": [
+      {
+        "value": "{wrong_num}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você comparou só os numeradores. Com denominadores diferentes, é preciso igualar primeiro. {steps}"
+      },
+      {
+        "value": "{wrong_den}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você comparou só os denominadores. Maior denominador não significa maior fração. {steps}"
+      },
+      {
+        "value": "São iguais",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "{a}/{b} ≠ {c}/{d}. {steps}"
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 5, 1],
+        "b": [3, 4, 6, 2],
+        "c": [3, 5, 3, 3],
+        "d": [4, 8, 4, 5],
+        "larger": "a fração maior",
+        "bd": "denominador comum",
+        "an": "a * (bd/b)",
+        "cn": "c * (bd/d)",
+        "op": "< ou >",
+        "steps": "comparação com denominador comum",
+        "wrong_num": "fração com maior numerador",
+        "wrong_den": "fração com menor denominador"
+      },
+      "constraints": ["frações não equivalentes", "não trivial (ex: 2/3 vs 3/4)"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "2", "b": "3", "c": "3", "d": "4", "larger": "3/4", "bd": "12", "an": "8", "cn": "9", "op": "<", "steps": "2/3=8/12, 3/4=9/12, 9>8", "wrong_num": "3/4", "wrong_den": "2/3" },
+        "question": "Qual é maior: 2/3 ou 3/4?",
+        "correct": "3/4",
+        "distractors": ["2/3 (maior numerador relativo)", "2/3 (menor denominador)", "São iguais"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-add-frac-L3-write",
+    "unit_id": "KE.8",
+    "level": "L3",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a}/{b} + {c}/{d} = ?",
+    "correct": "{result}",
+    "feedback_correct": "MMC({b},{d}) = {mmc}. {a}/{b} = {an}/{mmc}, {c}/{d} = {cn}/{mmc}. Soma: {an+cn}/{mmc} = {result}.",
+    "distractors": [
+      {
+        "value": "{a+c}/{b+d}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Somar numeradores e denominadores separadamente está errado. Iguale os denominadores primeiro. {a}/{b} + {c}/{d} = {result}."
+      },
+      {
+        "value": "{an}/{mmc}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você converteu só a primeira fração. Converta ambas para o denominador {mmc} e some os numeradores."
+      },
+      {
+        "value": "{a*c}/{b*d}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Multiplicação de frações é a/b × c/d = ac/bd. Para adição, iguale os denominadores. {a}/{b} + {c}/{d} = {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [1, 1, 2, 3],
+        "b": [2, 3, 3, 4],
+        "c": [1, 1, 1, 1],
+        "d": [3, 4, 6, 6],
+        "mmc": "MMC(b,d)",
+        "an": "a * (mmc/b)",
+        "cn": "c * (mmc/d)",
+        "result": "fração simplificada do resultado"
+      },
+      "constraints": ["b != d", "resultado simplificável para verificar domínio completo"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "1", "b": "2", "c": "1", "d": "3", "mmc": "6", "an": "3", "cn": "2", "result": "5/6" },
+        "question": "1/2 + 1/3 = ?",
+        "correct": "5/6",
+        "distractors": ["2/5", "3/6", "1/6"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-mult-frac-L3-write",
+    "unit_id": "KE.9",
+    "level": "L3",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a}/{b} × {c}/{d} = ?",
+    "correct": "{a*c}/{b*d} simplificado",
+    "feedback_correct": "{a}/{b} × {c}/{d} = {a*c}/{b*d} = {result}. Multiplique numerador com numerador e denominador com denominador.",
+    "distractors": [
+      {
+        "value": "{a+c}/{b+d}",
+        "distractor_type": "GENERALIZAÇÃO_INDEVIDA",
+        "feedback": "Você aplicou a regra da adição. Para multiplicação: numerador × numerador e denominador × denominador. Resultado: {result}."
+      },
+      {
+        "value": "{a*c}/{b+d}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Numerador correto, mas o denominador também deve ser multiplicado. {a}/{b} × {c}/{d} = {a*c}/{b*d} = {result}."
+      },
+      {
+        "value": "{a}/{b*d}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Você multiplicou só os denominadores. Multiplique também os numeradores: {a*c}/{b*d} = {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [1, 2, 3, 2],
+        "b": [2, 3, 4, 5],
+        "c": [2, 3, 2, 3],
+        "d": [3, 4, 5, 4],
+        "result": "a*c / b*d simplificado"
+      },
+      "constraints": ["resultado simplificável em pelo menos um caso"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "2", "b": "3", "c": "3", "d": "4", "result": "1/2" },
+        "question": "2/3 × 3/4 = ?",
+        "correct": "1/2",
+        "distractors": ["5/7", "6/7", "2/12"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-div-frac-L3-write",
+    "unit_id": "KE.10",
+    "level": "L3",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "{a}/{b} ÷ {c}/{d} = ?",
+    "correct": "{a*d}/{b*c} simplificado",
+    "feedback_correct": "Divida multiplicando pelo inverso: {a}/{b} × {d}/{c} = {a*d}/{b*c} = {result}.",
+    "distractors": [
+      {
+        "value": "{a*c}/{b*d}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você multiplicou em vez de dividir. Para dividir: inverta o divisor e multiplique. {a}/{b} ÷ {c}/{d} = {a}/{b} × {d}/{c} = {result}."
+      },
+      {
+        "value": "{b*c}/{a*d}",
+        "distractor_type": "ERRO_DIREÇÃO",
+        "feedback": "Você inverteu o dividendo em vez do divisor. Inverta {c}/{d} para {d}/{c} e multiplique por {a}/{b}. Resultado: {result}."
+      },
+      {
+        "value": "{a*d}/{b*d}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "O denominador deve ser b×c, não b×d. {a}/{b} ÷ {c}/{d} = {a*d}/{b*c} = {result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [1, 2, 3, 4],
+        "b": [2, 3, 4, 5],
+        "c": [1, 1, 2, 2],
+        "d": [3, 2, 3, 3],
+        "result": "a*d / b*c simplificado"
+      },
+      "constraints": ["resultado simplificável"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "3", "b": "4", "c": "2", "d": "3", "result": "9/8" },
+        "question": "3/4 ÷ 2/3 = ?",
+        "correct": "9/8",
+        "distractors": ["6/12", "8/9", "9/12"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-misto-L2-write",
+    "unit_id": "KE.11",
+    "level": "L2",
+    "format": "numeric_direct",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Converta {w} {n}/{d} para fração imprópria.",
+    "correct": "{w*d+n}/{d}",
+    "feedback_correct": "{w} {n}/{d} = ({w}×{d} + {n})/{d} = {w*d+n}/{d}.",
+    "distractors": [
+      {
+        "value": "{w*n}/{d}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você multiplicou a parte inteira pelo numerador. O correto: multiplique pelo denominador e some o numerador: ({w}×{d}+{n})/{d} = {w*d+n}/{d}."
+      },
+      {
+        "value": "{w*d}/{d}",
+        "distractor_type": "ATTENTION_ERROR",
+        "feedback": "Você esqueceu de somar o numerador {n}. ({w}×{d} + {n})/{d} = {w*d+n}/{d}."
+      },
+      {
+        "value": "{w+n}/{d}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "A parte inteira deve ser multiplicada pelo denominador, não somada ao numerador. ({w}×{d}+{n})/{d} = {w*d+n}/{d}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "w": [1, 2, 3, 4],
+        "n": [1, 2, 3],
+        "d": [3, 4, 5, 7]
+      },
+      "constraints": ["n < d"]
+    },
+    "seed_examples": [
+      {
+        "params": { "w": "2", "n": "3", "d": "4" },
+        "question": "Converta 2 3/4 para fração imprópria.",
+        "correct": "11/4",
+        "distractors": ["6/4", "8/4", "5/4"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-frac-dec-L2-write",
+    "unit_id": "KE.12",
+    "level": "L2",
+    "format": "numeric_indirect",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": true,
+    "time_limit": 5,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Converta {a}/{b} para decimal.",
+    "correct": "{decimal}",
+    "feedback_correct": "{a}/{b} = {a} ÷ {b} = {decimal}.",
+    "distractors": [
+      {
+        "value": "{b/a}",
+        "distractor_type": "ERRO_DIREÇÃO",
+        "feedback": "Você inverteu a divisão. {a}/{b} = {a} ÷ {b} = {decimal}, não {b} ÷ {a}."
+      },
+      {
+        "value": "0.{a}{b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Não justaponha os dígitos. {a}/{b} = {a} ÷ {b} = {decimal}."
+      },
+      {
+        "value": "{a/10}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Dividir por 10 só vale se b=10. {a}/{b} = {a} ÷ {b} = {decimal}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [1, 3, 1, 2, 1],
+        "b": [4, 4, 5, 5, 8],
+        "decimal": "a/b como decimal"
+      },
+      "constraints": ["resultado decimal finito", "pares frequentes: 1/4, 3/4, 1/5, 2/5, 1/8"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "3", "b": "4", "decimal": "0.75" },
+        "question": "Converta 3/4 para decimal.",
+        "correct": "0.75",
+        "distractors": ["1.33", "0.34", "0.3"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-dec-frac-L2-write",
+    "unit_id": "KE.13",
+    "level": "L2",
+    "format": "numeric_indirect",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": true,
+    "time_limit": 5,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Converta {dec} para fração irredutível.",
+    "correct": "{frac}",
+    "feedback_correct": "{dec} = {raw_frac}. Simplificando pelo MDC({num},{den}) = {mdc}: {frac}.",
+    "distractors": [
+      {
+        "value": "{num}/10",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "O denominador depende das casas decimais. {dec} tem {places} casa(s) decimal(is), então o denominador base é {den_base}. {dec} = {raw_frac} = {frac}."
+      },
+      {
+        "value": "{raw_frac}",
+        "distractor_type": "LOW_AUTOMATIZATION",
+        "feedback": "{raw_frac} está correto mas não simplificado. MDC({num},{den}) = {mdc}. Resultado: {frac}."
+      },
+      {
+        "value": "{dec}/{1}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Fração com denominador 1 não é a conversão correta. {dec} = {frac}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "dec": [0.25, 0.5, 0.75, 0.4, 0.6, 0.125],
+        "frac": "fração irredutível",
+        "raw_frac": "fração antes de simplificar",
+        "num": "numerador de raw_frac",
+        "den": "denominador de raw_frac",
+        "den_base": "10^(casas decimais)",
+        "places": "número de casas decimais",
+        "mdc": "MDC(num, den)"
+      },
+      "constraints": ["decimal finito", "simplificação não trivial"]
+    },
+    "seed_examples": [
+      {
+        "params": { "dec": "0.25", "frac": "1/4", "raw_frac": "25/100", "num": "25", "den": "100", "den_base": "100", "places": "2", "mdc": "25" },
+        "question": "Converta 0.25 para fração irredutível.",
+        "correct": "1/4",
+        "distractors": ["25/10", "25/100", "0.25/1"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-frac-pct-L2-write",
+    "unit_id": "KE.14",
+    "level": "L2",
+    "format": "numeric_indirect",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": true,
+    "time_limit": 5,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Converta {a}/{b} para porcentagem.",
+    "correct": "{pct}%",
+    "feedback_correct": "{a}/{b} = {decimal} × 100 = {pct}%.",
+    "distractors": [
+      {
+        "value": "{a}/{b}%",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Não é só adicionar %. Converta para decimal primeiro e multiplique por 100: {decimal} × 100 = {pct}%."
+      },
+      {
+        "value": "{decimal}%",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você esqueceu de multiplicar por 100. {a}/{b} = {decimal}, e {decimal} × 100 = {pct}%."
+      },
+      {
+        "value": "{b/a}%",
+        "distractor_type": "ERRO_DIREÇÃO",
+        "feedback": "Você inverteu a fração. {a}/{b} = {pct}%, não {b/a}%."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [1, 3, 1, 2, 3],
+        "b": [4, 4, 5, 5, 10],
+        "decimal": "a/b",
+        "pct": "decimal * 100"
+      },
+      "constraints": ["resultado porcentagem inteiro ou com 1 casa decimal"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "1", "b": "4", "decimal": "0.25", "pct": "25" },
+        "question": "Converta 1/4 para porcentagem.",
+        "correct": "25%",
+        "distractors": ["1/4%", "0.25%", "400%"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-pct-dec-L2-write",
+    "unit_id": "KE.15",
+    "level": "L2",
+    "format": "numeric_indirect",
+    "context": "bare",
+    "interaction": "I4",
+    "timed": true,
+    "time_limit": 4,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Converta {pct}% para decimal.",
+    "correct": "{decimal}",
+    "feedback_correct": "{pct}% = {pct} ÷ 100 = {decimal}.",
+    "distractors": [
+      {
+        "value": "{pct}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Não remova só o símbolo %. Divida por 100: {pct}% = {decimal}."
+      },
+      {
+        "value": "{pct * 100}",
+        "distractor_type": "ERRO_DIREÇÃO",
+        "feedback": "Você multiplicou por 100 em vez de dividir. {pct}% = {pct} ÷ 100 = {decimal}."
+      },
+      {
+        "value": "0.0{pct}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Cuidado com as casas decimais. {pct}% = {decimal}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "pct": [25, 50, 75, 20, 30, 60, 5, 15],
+        "decimal": "pct / 100"
+      },
+      "constraints": []
+    },
+    "seed_examples": [
+      {
+        "params": { "pct": "25", "decimal": "0.25" },
+        "question": "Converta 25% para decimal.",
+        "correct": "0.25",
+        "distractors": ["25", "2500", "0.025"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-relacao-L1-corr",
+    "unit_id": "KE.16",
+    "level": "L1",
+    "format": "numeric_indirect",
+    "context": "bare",
+    "interaction": "I3",
+    "timed": true,
+    "time_limit": 5,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Associe cada fração ao seu decimal e porcentagem equivalentes.",
+    "correct": "{pairs}",
+    "feedback_correct": "Conversões: fração ÷ denominador = decimal; decimal × 100 = porcentagem.",
+    "distractors": [
+      {
+        "value": "1/4 com 0.4",
+        "distractor_type": "ERRO_CONVERSÃO",
+        "feedback": "1/4 = 0.25, não 0.4. 0.4 = 2/5."
+      },
+      {
+        "value": "1/2 com 5%",
+        "distractor_type": "ERRO_CONVERSÃO",
+        "feedback": "1/2 = 50%, não 5%. Multiplique o decimal por 100: 0.5 × 100 = 50."
+      }
+    ],
+    "params": {
+      "vars": {
+        "pairs": [
+          {"frac": "1/4",  "dec": "0.25", "pct": "25%"},
+          {"frac": "1/2",  "dec": "0.5",  "pct": "50%"},
+          {"frac": "3/4",  "dec": "0.75", "pct": "75%"},
+          {"frac": "1/5",  "dec": "0.2",  "pct": "20%"},
+          {"frac": "2/5",  "dec": "0.4",  "pct": "40%"},
+          {"frac": "3/5",  "dec": "0.6",  "pct": "60%"},
+          {"frac": "1/10", "dec": "0.1",  "pct": "10%"}
+        ]
+      },
+      "constraints": ["3 pares por instância", "variar conjuntos"]
+    },
+    "seed_examples": [
+      {
+        "params": { "pairs": [{"frac":"1/4","dec":"0.25","pct":"25%"},{"frac":"3/4","dec":"0.75","pct":"75%"},{"frac":"1/5","dec":"0.2","pct":"20%"}] },
+        "question": "Associe 1/4, 3/4 e 1/5 com seus decimais e porcentagens.",
+        "correct": "1/4↔0.25↔25%, 3/4↔0.75↔75%, 1/5↔0.2↔20%",
+        "distractors": ["1/4 com 0.4", "1/5 com 5%"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-aumento-pct-L3-write",
+    "unit_id": "KE.18",
+    "level": "L3",
+    "format": "verbal_simple",
+    "context": "verbal_context",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Um produto custava R${v}. Sofreu um aumento de {p}%. Qual é o novo preço?",
+    "correct": "R${v * (1 + p/100)}",
+    "feedback_correct": "Novo preço = {v} × (1 + {p}/100) = {v} × {factor} = R${result}.",
+    "distractors": [
+      {
+        "value": "R${v + p}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você somou o percentual diretamente ao preço. {p}% de R${v} = R${v*p/100}. Novo preço = R${v} + R${v*p/100} = R${result}."
+      },
+      {
+        "value": "R${v * p / 100}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você calculou só o aumento, não o novo preço. Novo preço = preço original + aumento = R${v} + R${v*p/100} = R${result}."
+      },
+      {
+        "value": "R${v / (1 + p/100)}",
+        "distractor_type": "ERRO_DIREÇÃO",
+        "feedback": "Você dividiu em vez de multiplicar. Para aumento: novo = original × (1 + taxa). Resultado: R${result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "v": [50, 80, 120, 200, 250],
+        "p": [10, 20, 25, 50],
+        "factor": "1 + p/100",
+        "result": "v * factor"
+      },
+      "constraints": ["resultado inteiro ou com no máximo 2 casas decimais"]
+    },
+    "seed_examples": [
+      {
+        "params": { "v": "80", "p": "25", "factor": "1.25", "result": "100" },
+        "question": "Um produto custava R$80. Sofreu um aumento de 25%. Qual é o novo preço?",
+        "correct": "R$100",
+        "distractors": ["R$105", "R$20", "R$64"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-desconto-L3-write",
+    "unit_id": "KE.19",
+    "level": "L3",
+    "format": "verbal_simple",
+    "context": "verbal_context",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Um produto custava R${v}. Teve desconto de {p}%. Qual é o preço final?",
+    "correct": "R${v * (1 - p/100)}",
+    "feedback_correct": "Preço final = {v} × (1 - {p}/100) = {v} × {factor} = R${result}.",
+    "distractors": [
+      {
+        "value": "R${v - p}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você subtraiu o percentual diretamente. {p}% de R${v} = R${v*p/100}. Preço final = R${v} - R${v*p/100} = R${result}."
+      },
+      {
+        "value": "R${v * p / 100}",
+        "distractor_type": "ERRO_PROCEDIMENTO",
+        "feedback": "Você calculou o desconto, não o preço final. Preço final = R${v} - R${v*p/100} = R${result}."
+      },
+      {
+        "value": "R${v * (1 + p/100)}",
+        "distractor_type": "ERRO_DIREÇÃO",
+        "feedback": "Você aplicou aumento em vez de desconto. Para desconto: preço final = original × (1 - taxa) = R${result}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "v": [50, 80, 120, 200, 160],
+        "p": [10, 20, 25, 50],
+        "factor": "1 - p/100",
+        "result": "v * factor"
+      },
+      "constraints": ["resultado inteiro"]
+    },
+    "seed_examples": [
+      {
+        "params": { "v": "120", "p": "25", "factor": "0.75", "result": "90" },
+        "question": "Um produto custava R$120. Teve desconto de 25%. Qual é o preço final?",
+        "correct": "R$90",
+        "distractors": ["R$95", "R$30", "R$150"]
+      }
+    ]
+  },
+
+  {
+    "template_id": "KE-proporcao-L3-write",
+    "unit_id": "KE.21",
+    "level": "L3",
+    "format": "verbal_simple",
+    "context": "verbal_context",
+    "interaction": "I4",
+    "timed": false,
+    "time_limit": null,
+    "method_cue": "explicit",
+    "transfer_condition": null,
+    "integration_pair_id": null,
+    "units_required": null,
+    "question": "Se {a} {unidade} custam R${v}, quanto custam {b} {unidade}?",
+    "correct": "R${b*v/a}",
+    "feedback_correct": "Proporção: {a} → R${v}, então 1 → R${v/a}, então {b} → R${b*v/a}.",
+    "distractors": [
+      {
+        "value": "R${v*b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Você multiplicou o preço total por {b} sem dividir por {a}. Preço unitário = R${v}/{a} = R${v/a}. Para {b}: R${b*v/a}."
+      },
+      {
+        "value": "R${v/b}",
+        "distractor_type": "ERRO_DIREÇÃO",
+        "feedback": "Você dividiu pelo valor errado. Use regra de três: {a} → {v}, {b} → x. x = {b}×{v}/{a} = R${b*v/a}."
+      },
+      {
+        "value": "R${a*b}",
+        "distractor_type": "CONCEPTUAL_GAP",
+        "feedback": "Isso multiplica as quantidades sem usar o preço. Para {b} {unidade}: ({b}/{a}) × R${v} = R${b*v/a}."
+      }
+    ],
+    "params": {
+      "vars": {
+        "a": [2, 3, 4, 5],
+        "b": [6, 9, 8, 10, 15],
+        "v": [10, 12, 20, 15],
+        "unidade": ["kg", "litros", "metros", "unidades"],
+        "result": "b*v/a"
+      },
+      "constraints": ["b/a inteiro ou b*v divisível por a"]
+    },
+    "seed_examples": [
+      {
+        "params": { "a": "3", "b": "9", "v": "12", "unidade": "kg", "result": "36" },
+        "question": "Se 3 kg custam R$12, quanto custam 9 kg?",
+        "correct": "R$36",
+        "distractors": ["R$108", "R$4", "R$27"]
+      }
+    ]
+  }
+]
