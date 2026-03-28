@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sistema Adaptativo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg:        #FAFAF8;
+    --surface:   #FFFFFF;
+    --border:    #E8E8E4;
+    --text:      #1A1A18;
+    --text-2:    #6B6B65;
+    --text-3:    #AEAEA8;
+    --green:     #2D6A4F;
+    --green-bg:  #EDF7F2;
+    --red:       #9B2335;
+    --red-bg:    #FDF0F2;
+    --amber:     #92600A;
+    --amber-bg:  #FDF6EC;
+    --blue:      #1A3A6B;
+    --blue-bg:   #EEF3FB;
+    --progress:  #1A1A18;
+    --r:         12px;
+    --r-sm:      8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    max-width: 420px;
+    margin: 0 auto;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 12px;
+    gap: 12px;
+  }
+  .progress-wrap { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--progress); border-radius: 2px; transition: width 0.4s ease; }
+  .topbar-meta { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-3); white-space: nowrap; }
+  .btn-icon { width: 28px; height: 28px; border: none; background: none; cursor: pointer; color: var(--text-3); display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.15s; }
+  .btn-icon:hover { background: var(--border); }
+  .btn-icon svg { width: 16px; height: 16px; }
+
+  /* ── MAIN ── */
+  .main { flex: 1; padding: 8px 20px 24px; display: flex; flex-direction: column; gap: 20px; }
+  .unit-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ── ITEM CARD ── */
+  .item-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 20px; }
+  .item-level { display: inline-flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-3); margin-bottom: 14px; }
+  .level-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); }
+  .item-question { font-family: 'DM Serif Display', serif; font-size: 22px; line-height: 1.35; }
+
+  /* ── CHOICES ── */
+  .choices { display: flex; flex-direction: column; gap: 8px; }
+  .choice {
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: var(--r-sm); padding: 14px 16px; font-size: 15px;
+    color: var(--text); cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    display: flex; align-items: center; gap: 12px; text-align: left; width: 100%;
+  }
+  .choice:active { transform: scale(0.985); }
+  .choice-key { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-3); width: 18px; flex-shrink: 0; }
+  .choice:hover:not(:disabled) { border-color: var(--text); background: var(--bg); }
+  .choice.selected { border-color: var(--text); background: var(--text); color: white; }
+  .choice.selected .choice-key { color: rgba(255,255,255,0.5); }
+  .choice.correct { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+  .choice.incorrect { border-color: var(--red); background: var(--red-bg); color: var(--red); }
+  .choice.reveal { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+
+  /* ── WRITE INPUT ── */
+  .write-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .write-input {
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: var(--r-sm); padding: 14px 16px;
+    font-family: 'DM Mono', monospace; font-size: 20px;
+    color: var(--text); width: 100%; outline: none; transition: border-color 0.15s;
+  }
+  .write-input:focus { border-color: var(--text); }
+
+  /* ── FEEDBACK ── */
+  .feedback { border-radius: var(--r-sm); padding: 14px 16px; display: none; flex-direction: column; gap: 6px; animation: slideUp 0.2s ease; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .feedback.show { display: flex; }
+  .feedback.correct { background: var(--green-bg); border: 1px solid #B7DFD0; }
+  .feedback.incorrect { background: var(--red-bg); border: 1px solid #EFBDC5; }
+  .feedback.calibration { background: var(--amber-bg); border: 1px solid #F0D5A8; }
+  .feedback-header { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 14px; }
+  .feedback.correct .feedback-header { color: var(--green); }
+  .feedback.incorrect .feedback-header { color: var(--red); }
+  .feedback.calibration .feedback-header { color: var(--amber); }
+  .feedback-body { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+  .feedback-link { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--amber); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; cursor: pointer; }
+  .feedback-link:hover { text-decoration: underline; }
+
+  /* ── BUTTONS ── */
+  .btn-primary { width: 100%; background: var(--text); color: white; border: none; border-radius: var(--r-sm); padding: 15px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+  .btn-primary:active { transform: scale(0.985); opacity: 0.85; }
+  .btn-primary.secondary { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
+  .btn-primary:disabled { opacity: 0.4; cursor: default; }
+
+  /* ── SCREENS ── */
+  .screen { display: none; flex-direction: column; flex: 1; }
+  .screen.active { display: flex; }
+
+  /* ── LOADING ── */
+  .loading { display: flex; align-items: center; justify-content: center; flex: 1; flex-direction: column; gap: 12px; }
+  .spinner { width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-3); }
+
+  /* ── SETUP (student ID) ── */
+  .setup-wrap { padding: 40px 20px; display: flex; flex-direction: column; gap: 20px; flex: 1; justify-content: center; }
+  .setup-title { font-family: 'DM Serif Display', serif; font-size: 26px; }
+  .setup-sub { font-size: 14px; color: var(--text-2); }
+  .setup-input { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 16px; color: var(--text); outline: none; transition: border-color 0.15s; }
+  .setup-input:focus { border-color: var(--text); }
+
+  /* ── SUMMARY ── */
+  .summary-wrap { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .summary-title { font-family: 'DM Serif Display', serif; font-size: 22px; }
+  .summary-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px; }
+  .stat-val { font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 500; line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 12px; color: var(--text-2); }
+
+  /* ── ALERT ── */
+  .alert-banner { margin: 0 20px 8px; background: var(--amber-bg); border: 1px solid #F0D5A8; border-radius: var(--r-sm); padding: 12px 14px; font-size: 13px; color: var(--amber); display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+  /* ── MACRO ── */
+  .macro-header { padding: 16px 20px 8px; display: flex; align-items: baseline; justify-content: space-between; }
+  .macro-title { font-family: 'DM Serif Display', serif; font-size: 22px; }
+  .macro-streak { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-2); display: flex; align-items: center; gap: 5px; }
+  .streak-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); }
+  .macro-list { padding: 8px 20px 24px; display: flex; flex-direction: column; gap: 6px; }
+  .block-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color 0.15s; }
+  .block-row:hover { border-color: var(--text-3); }
+  .block-id { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text-3); width: 24px; flex-shrink: 0; }
+  .block-name { flex: 1; font-size: 14px; }
+  .block-bar-wrap { width: 48px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .block-bar { height: 100%; border-radius: 2px; background: var(--text); }
+  .status-pill { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 20px; }
+  .pill-progress { background: var(--blue-bg); color: var(--blue); }
+  .pill-fragile  { background: var(--amber-bg); color: var(--amber); }
+  .pill-mastered { background: var(--green-bg); color: var(--green); }
+  .pill-inactive { background: var(--bg); color: var(--text-3); border: 1px solid var(--border); }
+
+  /* ── HEATMAP ── */
+  .heatmap-section { padding: 0 20px 24px; }
+  .heatmap-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .heatmap-grid { display: grid; grid-template-columns: repeat(13, 1fr); gap: 3px; }
+  .hm-cell { aspect-ratio: 1; border-radius: 2px; background: var(--border); }
+  .hm-cell.l1 { background: #C8E6C9; } .hm-cell.l2 { background: #81C784; }
+  .hm-cell.l3 { background: #388E3C; } .hm-cell.l4 { background: #1B5E20; }
+
+  /* ── MICRO ── */
+  .micro-header { padding: 16px 20px 4px; }
+  .micro-title { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 4px; }
+  .micro-id { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-3); }
+  .dim-list { padding: 12px 20px 24px; display: flex; flex-direction: column; gap: 8px; }
+  .dim-row { display: flex; flex-direction: column; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; }
+  .dim-top { display: flex; align-items: center; justify-content: space-between; }
+  .dim-name { font-size: 13px; font-weight: 500; }
+  .dim-value { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-2); }
+  .dim-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .dim-bar { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+  .dim-note { font-size: 12px; color: var(--amber); margin-top: 2px; }
+
+  /* ── DIAGNOSTIC ── */
+  .diag-wrap { padding: 16px 20px 24px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
+  .diag-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-3); text-transform: uppercase; }
+  .diag-progress { font-size: 13px; color: var(--text-2); }
+
+  /* ── ERROR ── */
+  .error-banner { margin: 20px; background: var(--red-bg); border: 1px solid #EFBDC5; border-radius: var(--r-sm); padding: 14px; font-size: 13px; color: var(--red); }
+
+  /* ── SCROLLABLE ── */
+  .scrollable { overflow-y: auto; flex: 1; }
+
+  .fade-in { animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<!-- ══ SCREEN: SETUP ══ -->
+<div class="screen active" id="screen-setup">
+  <div class="setup-wrap">
+    <div>
+      <div class="setup-title">Sistema Adaptativo</div>
+      <div class="setup-sub" style="margin-top:8px">Entre com seu ID para continuar.</div>
+    </div>
+    <input class="setup-input" id="student-id-input" type="text" placeholder="Seu ID de aluno" autocomplete="off">
+    <button class="btn-primary" onclick="handleSetup()">Entrar</button>
+    <div id="setup-error" class="error-banner" style="display:none;margin:0"></div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: LOADING ══ -->
+<div class="screen" id="screen-loading">
+  <div class="loading">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Carregando...</div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: DIAGNOSTIC ══ -->
+<div class="screen" id="screen-diagnostic">
+  <div class="topbar">
+    <div class="progress-wrap"><div class="progress-fill" id="diag-progress-fill" style="width:0%"></div></div>
+    <span class="topbar-meta" id="diag-counter">1 / 8</span>
+  </div>
+  <div class="diag-wrap">
+    <span class="diag-label">Diagnóstico inicial</span>
+    <div class="item-card" id="diag-item-card">
+      <div class="item-level"><span class="level-dot"></span> <span id="diag-level-label">reconhecimento</span></div>
+      <div class="item-question" id="diag-question">—</div>
+    </div>
+    <div id="diag-interaction-area"></div>
+    <div id="diag-feedback-correct"   class="feedback correct"></div>
+    <div id="diag-feedback-incorrect" class="feedback incorrect"></div>
+    <button class="btn-primary" id="diag-next-btn" style="display:none" onclick="diagNext()">Continuar</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: SESSION ══ -->
+<div class="screen" id="screen-session">
+  <div class="topbar">
+    <div class="progress-wrap"><div class="progress-fill" id="session-progress-fill" style="width:0%"></div></div>
+    <span class="topbar-meta" id="session-counter">0 / 0</span>
+    <button class="btn-icon" onclick="endSession()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l10 10M13 3L3 13"/></svg>
+    </button>
+  </div>
+  <div class="main" id="session-main">
+    <span class="unit-label" id="session-unit-label">—</span>
+    <div class="item-card">
+      <div class="item-level"><span class="level-dot"></span> <span id="session-level-label">—</span></div>
+      <div class="item-question" id="session-question">—</div>
+    </div>
+    <div id="session-interaction-area"></div>
+    <div id="session-feedback-correct"   class="feedback correct"></div>
+    <div id="session-feedback-incorrect" class="feedback incorrect"></div>
+    <div id="session-feedback-calibration" class="feedback calibration"></div>
+    <button class="btn-primary" id="session-next-btn" style="display:none" onclick="sessionNext()">Continuar</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: SUMMARY ══ -->
+<div class="screen" id="screen-summary">
+  <div class="summary-wrap">
+    <div class="summary-title">Sessão concluída</div>
+    <div class="summary-stats">
+      <div class="stat-box">
+        <div class="stat-val" id="summary-items">—</div>
+        <div class="stat-label">itens praticados</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="summary-accuracy">—</div>
+        <div class="stat-label">taxa de acerto</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="summary-weakening" style="color:var(--amber)">—</div>
+        <div class="stat-label">unidades a revisar</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="summary-streak">—</div>
+        <div class="stat-label">dias seguidos</div>
+      </div>
+    </div>
+    <div id="summary-alerts"></div>
+    <button class="btn-primary secondary" onclick="showMacro()">Ver relatório</button>
+    <button class="btn-primary" onclick="startSession()">Continuar praticando</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: MACRO ══ -->
+<div class="screen" id="screen-macro">
+  <div class="scrollable">
+    <div class="macro-header">
+      <span class="macro-title">Progresso</span>
+      <span class="macro-streak"><span class="streak-dot"></span> <span id="macro-streak">—</span></span>
+    </div>
+    <div id="macro-alerts"></div>
+    <div class="macro-list" id="macro-list"></div>
+    <div class="heatmap-section">
+      <div class="heatmap-label">Consistência — últimas 13 semanas</div>
+      <div class="heatmap-grid" id="heatmap"></div>
+    </div>
+  </div>
+  <div style="padding:16px 20px">
+    <button class="btn-primary" onclick="startSession()">Praticar</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: MICRO ══ -->
+<div class="screen" id="screen-micro">
+  <div class="topbar" style="padding-bottom:8px">
+    <button class="btn-icon" id="micro-back-btn">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3L4 8l6 5"/></svg>
+    </button>
+    <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text-3)" id="micro-unit-id">—</span>
+    <div style="width:28px"></div>
+  </div>
+  <div class="scrollable">
+    <div class="micro-header">
+      <div class="micro-title" id="micro-title">—</div>
+      <div class="micro-id" id="micro-subtitle">—</div>
+    </div>
+    <div class="dim-list" id="micro-dims"></div>
+  </div>
+</div>
+
+<script>
+// ══ CONFIG ════════════════════════════════════════════════
+// Set your deployed backend URL here
+const API_BASE = (localStorage.getItem('api_base') || 'http://localhost:3000').replace(/\/$/, '');
+
+// ══ STATE ════════════════════════════════════════════════
+const state = {
+  studentId:   null,
+  sessionId:   null,
+  diagnosticId: null,
+  plan:        [],
+  currentItem: null,
+  currentIndex: 0,
+  sessionCorrect: 0,
+  sessionTotal:   0,
+  startTime:   null,
+  microReturnScreen: 'macro',
+};
+
+// ══ API ══════════════════════════════════════════════════
+
+async function api(method, path, body) {
+  try {
+    const res = await fetch(API_BASE + path, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.error('API error:', path, err);
+    throw err;
+  }
+}
+
+// ══ SETUP ════════════════════════════════════════════════
+
+async function handleSetup() {
+  const input = document.getElementById('student-id-input').value.trim();
+  if (!input) return;
+
+  state.studentId = input;
+  localStorage.setItem('studentId', input);
+
+  showLoading('Verificando seu perfil...');
+
+  try {
+    // Check if student exists and has completed diagnostic
+    const studentMeta = await api('GET', `/student/state?studentId=${input}`).catch(() => null);
+
+    if (!studentMeta || !studentMeta.diagnosticComplete) {
+      // Start diagnostic
+      const data = await api('POST', '/diagnostic/start', { studentId: input });
+      state.diagnosticId = data.diagnosticId;
+      renderDiagnosticItem(data.firstItem, 1);
+      showScreen('diagnostic');
+    } else {
+      // Go straight to session
+      await startSession();
+    }
+  } catch (err) {
+    showScreen('setup');
+    document.getElementById('setup-error').style.display = 'block';
+    document.getElementById('setup-error').textContent = 'Erro ao conectar. Verifique a URL do servidor.';
+  }
+}
+
+// ══ DIAGNOSTIC ═══════════════════════════════════════════
+
+let diagIndex = 1;
+const DIAG_TOTAL = 8;
+
+function renderDiagnosticItem(item, index) {
+  if (!item) return;
+  state.currentItem = item;
+  diagIndex = index;
+
+  document.getElementById('diag-counter').textContent = `${index} / ${DIAG_TOTAL}`;
+  document.getElementById('diag-progress-fill').style.width = `${(index/DIAG_TOTAL)*100}%`;
+  document.getElementById('diag-level-label').textContent = levelLabel(item.demandLevel);
+  document.getElementById('diag-question').textContent = item.question;
+
+  document.getElementById('diag-feedback-correct').classList.remove('show');
+  document.getElementById('diag-feedback-incorrect').classList.remove('show');
+  document.getElementById('diag-next-btn').style.display = 'none';
+
+  renderInteraction('diag-interaction-area', item, 'diag');
+}
+
+async function diagAnswer(answer, chosenDistractorType) {
+  const latencyMs = Date.now() - state.startTime;
+  showLoading('Registrando...');
+
+  try {
+    const data = await api('POST', '/diagnostic/answer', {
+      studentId:    state.studentId,
+      diagnosticId: state.diagnosticId,
+      item:         state.currentItem,
+      response:     { answer, latencyMs, chosenDistractorType },
+    });
+
+    showScreen('diagnostic');
+    const correct = answer === state.currentItem.correct;
+
+    // Show feedback
+    if (correct) {
+      const fb = document.getElementById('diag-feedback-correct');
+      fb.innerHTML = `<div class="feedback-header"><span>✓</span> Correto</div>
+                      <div class="feedback-body">${state.currentItem.feedbackCorrect || ''}</div>`;
+      fb.classList.add('show');
+    } else {
+      const chosen = state.currentItem.distractors?.find(d => d.value === answer);
+      const fb = document.getElementById('diag-feedback-incorrect');
+      fb.innerHTML = `<div class="feedback-header"><span>✗</span> Incorreto</div>
+                      <div class="feedback-body">${chosen?.feedback || 'Incorreto.'}</div>`;
+      fb.classList.add('show');
+    }
+
+    document.getElementById('diag-next-btn').style.display = 'block';
+
+    if (data.diagnosticComplete) {
+      document.getElementById('diag-next-btn').textContent = 'Começar prática';
+      document.getElementById('diag-next-btn').onclick = () => startSession();
+    } else {
+      document.getElementById('diag-next-btn').onclick = () => {
+        renderDiagnosticItem(data.nextItem, diagIndex + 1);
+      };
+    }
+  } catch (err) {
+    showScreen('diagnostic');
+    showError('Erro ao registrar resposta.');
+  }
+}
+
+// ══ SESSION ══════════════════════════════════════════════
+
+async function startSession() {
+  showLoading('Preparando sua sessão...');
+  try {
+    const data = await api('POST', '/session/start', { studentId: state.studentId });
+    state.sessionId    = data.sessionId;
+    state.plan         = data.plan;
+    state.currentIndex = 0;
+    state.sessionCorrect = 0;
+    state.sessionTotal   = 0;
+
+    renderSessionItem(data.firstItem, 0);
+    showScreen('session');
+  } catch (err) {
+    showScreen('summary');
+    showError('Erro ao iniciar sessão.');
+  }
+}
+
+function renderSessionItem(item, index) {
+  if (!item) { endSession(); return; }
+  state.currentItem = item;
+  state.currentIndex = index;
+  state.startTime = Date.now();
+
+  const total = state.plan.length;
+  document.getElementById('session-counter').textContent = `${index + 1} / ${total}`;
+  document.getElementById('session-progress-fill').style.width = `${((index)/total)*100}%`;
+  document.getElementById('session-unit-label').textContent = item.unitId || '—';
+  document.getElementById('session-level-label').textContent = levelLabel(item.demandLevel);
+  document.getElementById('session-question').textContent = item.question;
+
+  // Clear feedback
+  ['correct','incorrect','calibration'].forEach(t => {
+    document.getElementById(`session-feedback-${t}`).classList.remove('show');
+  });
+  document.getElementById('session-next-btn').style.display = 'none';
+
+  renderInteraction('session-interaction-area', item, 'session');
+}
+
+async function sessionAnswer(answer, chosenDistractorType) {
+  const latencyMs = Date.now() - state.startTime;
+  disableInteraction('session-interaction-area');
+
+  try {
+    const data = await api('POST', '/session/answer', {
+      studentId: state.studentId,
+      sessionId: state.sessionId,
+      item:      state.currentItem,
+      response:  { answer, latencyMs, chosenDistractorType },
+    });
+
+    const correct = data.feedback.correct;
+    state.sessionTotal++;
+    if (correct) state.sessionCorrect++;
+
+    // Feedback
+    if (correct) {
+      const fb = document.getElementById('session-feedback-correct');
+      fb.innerHTML = `<div class="feedback-header"><span>✓</span> Correto</div>
+                      <div class="feedback-body">${data.feedback.feedbackText || ''}</div>`;
+      fb.classList.add('show');
+    } else {
+      const fb = document.getElementById('session-feedback-incorrect');
+      fb.innerHTML = `<div class="feedback-header"><span>✗</span> Incorreto</div>
+                      <div class="feedback-body">${data.feedback.feedbackText || ''}</div>`;
+      fb.classList.add('show');
+    }
+
+    // Calibration
+    if (data.calibration) {
+      const fb = document.getElementById('session-feedback-calibration');
+      fb.innerHTML = `<div class="feedback-header"><span>◎</span> ${data.calibration.message}</div>
+                      <div class="feedback-body">${data.calibration.action}</div>
+                      <span class="feedback-link" onclick="showMicro('${data.calibration.unitId}','session')">Ver estado da unidade →</span>`;
+      fb.classList.add('show');
+    }
+
+    document.getElementById('session-next-btn').style.display = 'block';
+
+    if (data.sessionComplete) {
+      document.getElementById('session-next-btn').textContent = 'Ver resumo';
+      document.getElementById('session-next-btn').onclick = () => renderSummary(data.summary);
+    } else {
+      document.getElementById('session-next-btn').onclick = () => {
+        renderSessionItem(data.nextItem, state.currentIndex + 1);
+      };
+    }
+  } catch (err) {
+    document.getElementById('session-next-btn').style.display = 'block';
+    document.getElementById('session-next-btn').onclick = () => endSession();
+  }
+}
+
+function endSession() {
+  renderSummary(null);
+}
+
+// ══ SUMMARY ══════════════════════════════════════════════
+
+async function renderSummary(summaryData) {
+  const accuracy = state.sessionTotal > 0
+    ? Math.round((state.sessionCorrect / state.sessionTotal) * 100) + '%'
+    : '—';
+
+  document.getElementById('summary-items').textContent    = state.sessionTotal || '—';
+  document.getElementById('summary-accuracy').textContent = accuracy;
+
+  // Fetch streak
+  try {
+    const meta = await api('GET', `/student/state?studentId=${state.studentId}`);
+    document.getElementById('summary-streak').innerHTML =
+      `<span style="font-size:16px">🔥</span> ${meta.streak || 0}`;
+  } catch (_) {}
+
+  const weakening = summaryData?.weakening ?? [];
+  document.getElementById('summary-weakening').textContent = weakening.length || '0';
+
+  const alertsEl = document.getElementById('summary-alerts');
+  alertsEl.innerHTML = '';
+  for (const w of weakening.slice(0,2)) {
+    const banner = document.createElement('div');
+    banner.className = 'alert-banner';
+    banner.innerHTML = `<span>⚠</span> ${w.unitId} enfraquecendo — revisão recomendada`;
+    banner.onclick = () => showMicro(w.unitId, 'summary');
+    alertsEl.appendChild(banner);
+  }
+
+  showScreen('summary');
+}
+
+// ══ MACRO ════════════════════════════════════════════════
+
+async function showMacro() {
+  showLoading('Carregando progresso...');
+  try {
+    const data = await api('GET', `/student/curriculum?studentId=${state.studentId}`);
+
+    document.getElementById('macro-streak').textContent =
+      `${data.streak || 0} dias seguidos`;
+
+    // Alerts
+    const alertsEl = document.getElementById('macro-alerts');
+    alertsEl.innerHTML = '';
+    for (const w of (data.weakening || []).slice(0,2)) {
+      const banner = document.createElement('div');
+      banner.className = 'alert-banner';
+      banner.innerHTML = `<span>⚠</span> ${w.unitId} enfraquecendo`;
+      banner.onclick = () => showMicro(w.unitId, 'macro');
+      alertsEl.appendChild(banner);
+    }
+
+    // Block list
+    const listEl = document.getElementById('macro-list');
+    listEl.innerHTML = '';
+    const BLOCK_NAMES = {
+      'BLK.A':'Estrutura numérica','BLK.B':'Fatos aritméticos',
+      'BLK.C':'Propriedades','BLK.D':'Divisibilidade',
+      'BLK.E':'Frações e decimais','BLK.F':'Potenciação e log',
+      'BLK.G':'Técnicas de cálculo','BLK.H':'Integração vestibular',
+    };
+
+    for (const block of (data.blocks || [])) {
+      const pct  = Math.round(block.progress * 100);
+      const pill = pillHtml(block.status);
+      const barColor = block.status === 'fragile' ? 'var(--amber)' : 'var(--text)';
+      const row = document.createElement('div');
+      row.className = 'block-row';
+      row.innerHTML = `
+        <span class="block-id">${block.blockId.replace('BLK.','K')}</span>
+        <span class="block-name">${BLOCK_NAMES[block.blockId] || block.blockId}</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="block-bar-wrap"><div class="block-bar" style="width:${pct}%;background:${barColor}"></div></div>
+          ${pill}
+        </div>`;
+      row.onclick = () => showMicroFirstUnit(block.blockId);
+      listEl.appendChild(row);
+    }
+
+    // Heatmap
+    renderHeatmap(data.sessionHistory || []);
+
+    showScreen('macro');
+  } catch (err) {
+    showScreen('macro');
+    document.getElementById('macro-list').innerHTML =
+      '<div class="error-banner">Erro ao carregar progresso.</div>';
+  }
+}
+
+// ══ MICRO ════════════════════════════════════════════════
+
+async function showMicro(unitId, returnScreen) {
+  state.microReturnScreen = returnScreen;
+  document.getElementById('micro-back-btn').onclick = () => showScreen(returnScreen);
+  showLoading('Carregando unidade...');
+
+  try {
+    const data = await api('GET', `/student/unit/${unitId}?studentId=${state.studentId}`);
+
+    document.getElementById('micro-unit-id').textContent  = unitId;
+    document.getElementById('micro-title').textContent    = unitId;
+    document.getElementById('micro-subtitle').textContent = `Nível atual: ${levelLabel(currentLevel(data))}`;
+
+    const dimsEl = document.getElementById('micro-dims');
+    dimsEl.innerHTML = '';
+
+    const dims = [
+      { name: 'Domínio',           value: data.mastery?.level,              color: 'var(--blue)',   note: null },
+      { name: 'Retenção',          value: data.revisionNeed?.projectedRetention, color: 'var(--amber)', note: data.revisionNeed?.note },
+      { name: 'Reconhecimento',    value: data.recognitionVsProduction?.recognition, color: 'var(--green)', note: null },
+      { name: 'Produção autônoma', value: data.recognitionVsProduction?.production,  color: 'var(--blue)',  note: data.recognitionVsProduction?.note },
+      { name: 'Transferência',     value: data.localVsIntegrated?.transfer,          color: 'var(--text-3)',note: data.localVsIntegrated?.note },
+      { name: 'Fluência',          value: data.fluency?.adequate ? 1 : 0.4,          color: 'var(--text-3)',note: data.fluency?.note },
+    ];
+
+    for (const dim of dims) {
+      const pct = dim.value !== null && dim.value !== undefined
+        ? Math.round(dim.value * 100) : 0;
+      const valLabel = dim.value !== null && dim.value !== undefined
+        ? dim.value.toFixed(2) : 'n/a';
+      const row = document.createElement('div');
+      row.className = 'dim-row';
+      row.innerHTML = `
+        <div class="dim-top">
+          <span class="dim-name">${dim.name}</span>
+          <span class="dim-value">${valLabel}</span>
+        </div>
+        <div class="dim-bar-wrap">
+          <div class="dim-bar" style="width:${pct}%;background:${dim.color}"></div>
+        </div>
+        ${dim.note ? `<div class="dim-note">${dim.note}</div>` : ''}`;
+      dimsEl.appendChild(row);
+    }
+
+    // Dependencies
+    if (data.dependencies?.failing?.length > 0) {
+      const row = document.createElement('div');
+      row.className = 'dim-row';
+      row.style.background = 'var(--bg)';
+      row.innerHTML = `
+        <div class="dim-top"><span class="dim-name" style="color:var(--text-2)">Dependências com problema</span></div>
+        <div style="font-size:13px;color:var(--red)">${data.dependencies.failing.join(' · ')}</div>`;
+      dimsEl.appendChild(row);
+    }
+
+    showScreen('micro');
+  } catch (err) {
+    showScreen(state.microReturnScreen);
+  }
+}
+
+async function showMicroFirstUnit(blockId) {
+  const unitId = blockId.replace('BLK.','K') + '.1';
+  await showMicro(unitId, 'macro');
+}
+
+// ══ INTERACTION RENDERER ═════════════════════════════════
+
+function renderInteraction(containerId, item, prefix) {
+  const area = document.getElementById(containerId);
+  area.innerHTML = '';
+
+  if (!item) return;
+
+  // I1: multiple choice
+  if (item.interaction === 'I1' || !item.interaction) {
+    const wrap = document.createElement('div');
+    wrap.className = 'choices';
+    const keys = ['A','B','C','D'];
+    const options = buildOptions(item);
+
+    options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice';
+      btn.dataset.value = opt.value;
+      btn.dataset.distractor = opt.distractorType || '';
+      btn.innerHTML = `<span class="choice-key">${keys[i]}</span>${opt.value}`;
+      btn.onclick = () => {
+        if (prefix === 'diag') diagAnswer(opt.value, opt.distractorType);
+        else sessionAnswer(opt.value, opt.distractorType);
+      };
+      wrap.appendChild(btn);
+    });
+    area.appendChild(wrap);
+  }
+
+  // I4: write
+  else if (item.interaction === 'I4') {
+    const wrap = document.createElement('div');
+    wrap.className = 'write-wrap';
+    wrap.innerHTML = `<input class="write-input" id="${prefix}-write-input" type="text" placeholder="Sua resposta" autocomplete="off">
+                      <button class="btn-primary" onclick="submitWrite('${prefix}')">Confirmar</button>`;
+    area.appendChild(wrap);
+    setTimeout(() => document.getElementById(`${prefix}-write-input`)?.focus(), 100);
+  }
+
+  // I2: swipe (V/F)
+  else if (item.interaction === 'I2') {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;gap:8px';
+    ['Verdadeiro','Falso'].forEach(label => {
+      const btn = document.createElement('button');
+      btn.className = 'choice';
+      btn.style.flex = '1;justify-content:center';
+      btn.textContent = label;
+      btn.onclick = () => {
+        if (prefix === 'diag') diagAnswer(label, null);
+        else sessionAnswer(label, null);
+      };
+      wrap.appendChild(btn);
+    });
+    area.appendChild(wrap);
+  }
+
+  // Fallback: write
+  else {
+    const wrap = document.createElement('div');
+    wrap.className = 'write-wrap';
+    wrap.innerHTML = `<input class="write-input" id="${prefix}-write-input" type="text" placeholder="Sua resposta">
+                      <button class="btn-primary" onclick="submitWrite('${prefix}')">Confirmar</button>`;
+    area.appendChild(wrap);
+  }
+}
+
+function submitWrite(prefix) {
+  const val = document.getElementById(`${prefix}-write-input`)?.value?.trim();
+  if (!val) return;
+  if (prefix === 'diag') diagAnswer(val, null);
+  else sessionAnswer(val, null);
+}
+
+function buildOptions(item) {
+  const options = [{ value: item.correct, distractorType: null }];
+  for (const d of (item.distractors || []).slice(0, 3)) {
+    options.push({ value: d.value, distractorType: d.distractorType });
+  }
+  // Shuffle
+  for (let i = options.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [options[i], options[j]] = [options[j], options[i]];
+  }
+  return options;
+}
+
+function disableInteraction(containerId) {
+  document.querySelectorAll(`#${containerId} button, #${containerId} input`)
+    .forEach(el => el.disabled = true);
+}
+
+// ══ HEATMAP ══════════════════════════════════════════════
+
+function renderHeatmap(history) {
+  const hm = document.getElementById('heatmap');
+  hm.innerHTML = '';
+  // Generate 91 cells (13 weeks)
+  const today = new Date();
+  for (let i = 90; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split('T')[0];
+    const entry = history.find(h => h.date === key);
+    const level = entry ? Math.min(4, Math.ceil(entry.count / 3)) : 0;
+    const cell = document.createElement('div');
+    cell.className = `hm-cell${level ? ' l'+level : ''}`;
+    cell.title = key;
+    hm.appendChild(cell);
+  }
+}
+
+// ══ HELPERS ══════════════════════════════════════════════
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(`screen-${id}`);
+  if (el) { el.classList.add('active', 'fade-in'); }
+}
+
+function showLoading(text) {
+  document.getElementById('loading-text').textContent = text || 'Carregando...';
+  showScreen('loading');
+}
+
+function showError(msg) {
+  console.error(msg);
+}
+
+function levelLabel(level) {
+  const map = {
+    L1:'reconhecimento', L2:'execução guiada', L3:'execução livre',
+    L4:'transferência', L5:'integração'
+  };
+  return map[level] || level || '—';
+}
+
+function currentLevel(microData) {
+  if (!microData.mastery?.level) return 'L1';
+  const m = microData.mastery.level;
+  if (m < 0.5) return 'L1';
+  if (m < 0.70) return 'L2';
+  if (m < 0.85) return 'L3';
+  return 'L4';
+}
+
+function pillHtml(status) {
+  const map = {
+    in_progress: '<span class="status-pill pill-progress">progresso</span>',
+    fragile:     '<span class="status-pill pill-fragile">frágil</span>',
+    mastered:    '<span class="status-pill pill-mastered">dominado</span>',
+    inactive:    '<span class="status-pill pill-inactive">—</span>',
+  };
+  return map[status] || map.inactive;
+}
+
+function diagNext() {}  // overridden per-item
+
+// ══ INIT ════════════════════════════════════════════════
+
+(function init() {
+  // Check for saved API base
+  const savedBase = localStorage.getItem('api_base');
+  if (!savedBase) {
+    // Prompt for API URL on first load
+    const url = prompt('URL do servidor (ex: https://seu-app.railway.app)');
+    if (url) localStorage.setItem('api_base', url.replace(/\/$/, ''));
+    location.reload();
+    return;
+  }
+
+  // Check for saved student
+  const savedId = localStorage.getItem('studentId');
+  if (savedId) {
+    document.getElementById('student-id-input').value = savedId;
+  }
+})();
+</script>
+</body>
+</html>
